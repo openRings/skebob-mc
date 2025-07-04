@@ -1,0 +1,64 @@
+services:
+  proxy:
+    image: caddy:2.10-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
+
+  backend:
+    build:
+      dockerfile: ./docker/Dockerfile.dev.backend
+    restart: always
+    volumes:
+      - ./backend:/app
+      - cargo-cache:/usr/local/cargo
+
+  frontend:
+    build:
+      dockerfile: ../docker/Dockerfile.dev.frontend
+      context: ./frontend
+    restart: always
+    volumes:
+      - ./frontend:/app
+
+  minecraft:
+    build:
+      dockerfile: ../docker/Dockerfile.minecraft
+      context: ./minecraft
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 7777:7777
+    environment:
+      EULA: TRUE
+      TYPE: PAPER
+      VERSION: 1.21.1
+      MEMORY: 4G
+      MOTD: Памидоры памидоры помидоры
+      DIFFICULTY: hard
+      MAX_PLAYERS: 10000
+      SNOOPER_ENABLED: false
+      SPAWN_PROTECTION: 0
+      VIEW_DISTANCE: 64
+      MODE: survival
+      ONLINE_MODE: false
+      SERVER_PORT: 7777
+      SIMULATION_DISTANCE: 12
+    volumes:
+      - ./data/minecraft:/data
+
+  database:
+    image: mariadb
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: minecraft
+    volumes:
+      - ./data/database:/var/lib/mysql
+
+volumes:
+  cargo-cache:

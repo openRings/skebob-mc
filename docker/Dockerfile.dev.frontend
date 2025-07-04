@@ -1,0 +1,4 @@
+FROM node:24-alpine3.22 AS runner
+WORKDIR /app
+
+ENTRYPOINT ["sh", "-c", "npm i && npm run dev"]

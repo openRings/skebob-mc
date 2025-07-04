@@ -1,0 +1,8 @@
+FROM rust:1.88-alpine3.22 AS runner
+WORKDIR /app
+
+RUN apk add --no-cache build-base watchexec
+RUN echo "while true; do cargo run; sleep 1; done" > /bin/rerun.sh
+RUN chmod +x /bin/rerun.sh
+
+ENTRYPOINT ["watchexec", "-r", "-e", "rs,toml", "rerun.sh"]
