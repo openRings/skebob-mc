@@ -1,21 +1,27 @@
-use bcrypt::Version;
-use bcrypt::hash_with_result;
+use anyhow::Context;
+use axum::Router;
+use sqlx::MySqlPool;
+use tokio::net::TcpListener;
 
-fn main() {
-    let hash = hash_with_result("assword123", 10)
-        .unwrap()
-        .format_for_version(Version::TwoA);
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let database_pool = MySqlPool::connect_lazy("mysql://root:root@database:3306/minecraft")
+        .context("failed to initialize database pool")?;
 
-    let mut split = hash.split('$').skip(1);
+    sqlx::migrate!()
+        .run(&database_pool)
+        .await
+        .context("failed to migrate")?;
 
-    let algo = split.next().unwrap();
-    let cost = split.next().unwrap();
-    let rest = split.next().unwrap();
+    let router = Router::new().with_state(database_pool);
 
-    println!("rest: {}", rest);
+    let listener = TcpListener::bind("0.0.0.0:80")
+        .await
+        .context("failed to bind tcp listener")?;
 
-    let salt = &rest[..22];
-    let hash = &rest[22..];
+    axum::serve(listener, router)
+        .await
+        .context("failed to serve")?;
 
-    println!("hash: {}, salt: {}", hash, salt);
+    Ok(())
 }
