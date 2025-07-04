@@ -1,19 +1,22 @@
 use anyhow::Context;
 use axum::Router;
-use sqlx::MySqlPool;
 use tokio::net::TcpListener;
+
+use crate::database::Database;
+
+mod database;
+mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let database_pool = MySqlPool::connect_lazy("mysql://root:root@database:3306/minecraft")
-        .context("failed to initialize database pool")?;
+    let database = Database::new()?;
 
     sqlx::migrate!()
-        .run(&database_pool)
+        .run(&*database)
         .await
         .context("failed to migrate")?;
 
-    let router = Router::new().with_state(database_pool);
+    let router = Router::new().with_state(database);
 
     let listener = TcpListener::bind("0.0.0.0:80")
         .await
