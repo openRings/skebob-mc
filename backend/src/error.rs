@@ -1,5 +1,7 @@
 use axum::body::Body;
+use axum::extract::Request;
 use axum::http::StatusCode;
+use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 
 pub enum EndpointError {
@@ -12,6 +14,21 @@ pub enum EndpointError {
 enum Logging {
     Error(String),
     Warn(String),
+}
+
+pub async fn error_logging_middleware(req: Request, next: Next) -> Response {
+    let uri = req.uri().clone();
+
+    let resp = next.run(req).await;
+
+    if let Some(logging) = resp.extensions().get::<Logging>() {
+        match logging {
+            Logging::Error(err) => tracing::error!("endpoint {} error: {}", uri, err),
+            Logging::Warn(message) => tracing::warn!("endpoint {} warn: {}", uri, message),
+        }
+    }
+
+    resp
 }
 
 impl IntoResponse for EndpointError {
@@ -38,7 +55,7 @@ impl IntoResponse for EndpointError {
             Self::ServerError(err) => error(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Сервис временно недоступен",
-                Some(Logging::Error(err.to_string())),
+                Some(Logging::Error(format!("{err:?}"))),
             ),
         }
     }
