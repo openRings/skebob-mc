@@ -13,7 +13,7 @@ mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt().with_target(false).init();
+    tracing_subscriber::fmt().init();
 
     let database = Database::new()?;
 

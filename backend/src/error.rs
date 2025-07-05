@@ -13,7 +13,6 @@ pub enum EndpointError {
 #[derive(Clone)]
 enum Logging {
     Error(String),
-    Warn(String),
 }
 
 pub async fn error_logging_middleware(req: Request, next: Next) -> Response {
@@ -24,7 +23,6 @@ pub async fn error_logging_middleware(req: Request, next: Next) -> Response {
     if let Some(logging) = resp.extensions().get::<Logging>() {
         match logging {
             Logging::Error(err) => tracing::error!("endpoint {} error: {}", uri, err),
-            Logging::Warn(message) => tracing::warn!("endpoint {} warn: {}", uri, message),
         }
     }
 
