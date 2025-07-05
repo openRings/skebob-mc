@@ -1,12 +1,13 @@
 use anyhow::Context;
 use bcrypt::Version;
 use chrono::{DateTime, Utc};
+use sha2::Digest;
 use sqlx::FromRow;
 
 use super::session::{NewSession, Session};
 use crate::database::Database;
 
-#[derive(FromRow, Clone)]
+#[derive(FromRow, Clone, Debug)]
 pub struct User {
     id: i64,
     nickname: String,
@@ -40,7 +41,7 @@ impl User {
         Ok(last_id)
     }
 
-    pub async fn get_by_nickname(
+    pub async fn from_nickname(
         nickname: &str,
         database: &Database,
     ) -> anyhow::Result<Option<Self>> {
@@ -49,6 +50,23 @@ impl User {
             .fetch_optional(database.pool())
             .await
             .context("failed to fetch")
+    }
+
+    pub async fn from_access_token(
+        token: &str,
+        database: &Database,
+    ) -> anyhow::Result<Option<Self>> {
+        let access_token_hash = format!("{:x}", sha2::Sha256::digest(token));
+
+        sqlx::query_as(
+            "SELECT * FROM users
+            JOIN active_sessions ON users.id = active_sessions.user_id
+            WHERE access_token_hash = ?",
+        )
+        .bind(access_token_hash)
+        .fetch_optional(database.pool())
+        .await
+        .context("failed to fetch")
     }
 
     pub async fn generate_session(&self, database: &Database) -> anyhow::Result<NewSession> {

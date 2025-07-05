@@ -29,7 +29,7 @@ pub async fn signup(
         return Err(EndpointError::BadRequest(message.to_string()));
     }
 
-    if let Some(_user) = User::get_by_nickname(&nickname, &database)
+    if let Some(_user) = User::from_nickname(&nickname, &database)
         .await
         .with_context(|| format!("failed to search by nickname: {nickname}"))?
     {

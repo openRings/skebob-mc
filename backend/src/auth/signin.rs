@@ -22,7 +22,7 @@ pub async fn signin(
 ) -> Result<impl IntoResponse, EndpointError> {
     let SigninBody { nickname, password } = body;
 
-    let user = User::get_by_nickname(&nickname, &database)
+    let user = User::from_nickname(&nickname, &database)
         .await
         .with_context(|| format!("failed to get by nickname: {nickname}"))?;
 

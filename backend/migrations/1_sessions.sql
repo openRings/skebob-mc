@@ -7,3 +7,6 @@ CREATE TABLE sessions (
     `created_at` TIMESTAMP NOT NULL DEFAULT(CURRENT_TIMESTAMP)
 );
 
+CREATE VIEW active_sessions AS
+    SELECT * FROM sessions WHERE DATE_ADD(created_at, INTERVAL duration SECOND) > NOW();
+
