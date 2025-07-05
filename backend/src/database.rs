@@ -12,6 +12,8 @@ impl Database {
         let pool = MySqlPool::connect_lazy("mysql://root:root@database:3306/minecraft")
             .context("failed to initialize database pool")?;
 
+        tracing::info!("database pool initialized");
+
         Ok(Self { pool })
     }
 

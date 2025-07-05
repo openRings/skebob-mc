@@ -12,12 +12,16 @@ mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt().with_target(false).init();
+
     let database = Database::new()?;
 
     sqlx::migrate!()
         .run(&*database)
         .await
         .context("failed to migrate")?;
+
+    tracing::info!("database migration success");
 
     let router = Router::new()
         .nest("/profile", profile::get_nest())
@@ -27,6 +31,8 @@ async fn main() -> anyhow::Result<()> {
     let listener = TcpListener::bind("0.0.0.0:80")
         .await
         .context("failed to bind tcp listener")?;
+
+    tracing::info!("server listening: {:?}", listener.local_addr().unwrap());
 
     axum::serve(listener, router)
         .await

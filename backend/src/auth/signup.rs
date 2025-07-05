@@ -33,6 +33,8 @@ pub async fn signup(
         .await
         .with_context(|| format!("failed to search by nickname: {nickname}"))?
     {
+        tracing::warn!("tries to register existed nickname: {}", nickname);
+
         return Err(EndpointError::BadRequest(format!(
             "Ник {nickname} уже существует",
         )));
@@ -41,6 +43,8 @@ pub async fn signup(
     User::create(&nickname, &password, &database)
         .await
         .with_context(|| format!("failed to create user: {nickname}"))?;
+
+    tracing::info!("created user: {}", nickname);
 
     Ok(StatusCode::CREATED)
 }
