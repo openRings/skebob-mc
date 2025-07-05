@@ -1,20 +1,12 @@
 use anyhow::Context;
-use chrono::{DateTime, Duration, Utc};
+use chrono::Duration;
 use rand::Rng;
 use sha2::{Digest, Sha256};
-use sqlx::FromRow;
 
 use crate::database::Database;
 
-#[derive(FromRow, Clone)]
-pub struct Session {
-    id: i64,
-    access_token_hash: String,
-    refresh_token_hash: String,
-    user_id: i64,
-    duration: i32,
-    created_at: DateTime<Utc>,
-}
+#[derive(Clone)]
+pub struct Session;
 
 #[derive(Clone)]
 pub struct NewSession {
@@ -25,7 +17,7 @@ pub struct NewSession {
 impl Session {
     const DEFAULT_SESSION_DURATION: i64 = Duration::days(31).num_seconds();
 
-    pub async fn generate_for(user_id: i64, database: &Database) -> anyhow::Result<NewSession> {
+    pub async fn generate_for(user_id: u64, database: &Database) -> anyhow::Result<NewSession> {
         let new_session = NewSession::new();
 
         let access_token_hash = format!("{:x}", Sha256::digest(new_session.access_token()));

@@ -9,10 +9,10 @@ use crate::database::Database;
 
 #[derive(FromRow, Clone, Debug)]
 pub struct User {
-    id: i64,
+    id: u64,
     nickname: String,
     password_hash: String,
-    max_invites: i32,
+    max_invites: u16,
     created_at: DateTime<Utc>,
 }
 
