@@ -1,6 +1,7 @@
 use anyhow::Context;
 use axum::Router;
 use axum::middleware::from_fn;
+use axum_cookie::CookieLayer;
 use tokio::net::TcpListener;
 
 use crate::database::Database;
@@ -28,6 +29,7 @@ async fn main() -> anyhow::Result<()> {
         .nest("/profile", profile::get_nest())
         .merge(auth::get_nest())
         .layer(from_fn(error::error_logging_middleware))
+        .layer(CookieLayer::strict())
         .with_state(database);
 
     let listener = TcpListener::bind("0.0.0.0:80")

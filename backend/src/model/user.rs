@@ -3,6 +3,7 @@ use bcrypt::Version;
 use chrono::{DateTime, Utc};
 use sqlx::FromRow;
 
+use super::session::{NewSession, Session};
 use crate::database::Database;
 
 #[derive(FromRow, Clone)]
@@ -48,5 +49,11 @@ impl User {
             .fetch_optional(database.pool())
             .await
             .context("failed to fetch")
+    }
+
+    pub async fn generate_session(&self, database: &Database) -> anyhow::Result<NewSession> {
+        Session::generate_for(self.id, database)
+            .await
+            .context("failed to generate session")
     }
 }
