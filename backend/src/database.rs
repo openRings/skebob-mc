@@ -14,6 +14,10 @@ impl Database {
 
         Ok(Self { pool })
     }
+
+    pub fn pool(&self) -> &MySqlPool {
+        &self.pool
+    }
 }
 
 impl Deref for Database {
