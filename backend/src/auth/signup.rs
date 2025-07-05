@@ -29,7 +29,7 @@ pub async fn signup(
         return Err(EndpointError::BadRequest(message.to_string()));
     }
 
-    if let Some(_user) = User::search_by_nickname(&nickname, &database)
+    if let Some(_user) = User::get_by_nickname(&nickname, &database)
         .await
         .with_context(|| format!("failed to search by nickname: {nickname}"))?
     {
@@ -59,7 +59,7 @@ fn validate_passwords(password: &str, password_repeat: &str) -> Result<(), &'sta
     }
 
     if password.to_lowercase() == password || password.to_uppercase() == password {
-        return Err("Пароль должен содержать хотя бы одну заглавную букву");
+        return Err("Пароль должен содержать минимум одну заглавную и прописную букву");
     }
 
     if !password.chars().any(|c| c.is_ascii_digit()) {

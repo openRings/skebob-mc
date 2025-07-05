@@ -1,6 +1,6 @@
 use anyhow::Context;
 use bcrypt::Version;
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use sqlx::FromRow;
 
 use crate::database::Database;
@@ -11,10 +11,14 @@ pub struct User {
     nickname: String,
     password_hash: String,
     max_invites: i32,
-    created_at: NaiveDateTime,
+    created_at: DateTime<Utc>,
 }
 
 impl User {
+    pub fn validate_password(&self, password: &str) -> anyhow::Result<bool> {
+        bcrypt::verify(password, &self.password_hash).context("failed to hash password")
+    }
+
     pub async fn create(
         nickname: &str,
         password: &str,
@@ -35,7 +39,7 @@ impl User {
         Ok(last_id)
     }
 
-    pub async fn search_by_nickname(
+    pub async fn get_by_nickname(
         nickname: &str,
         database: &Database,
     ) -> anyhow::Result<Option<Self>> {
