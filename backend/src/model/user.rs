@@ -68,6 +68,22 @@ impl User {
             .context("failed to fetch")
     }
 
+    pub async fn invites_remained(&self, database: &Database) -> anyhow::Result<u16> {
+        #[derive(FromRow)]
+        struct InvitesRemained {
+            remained: u16,
+        }
+
+        let invites_remained: Option<InvitesRemained> =
+            sqlx::query_as("SELECT remained FROM user_invites_remained WHERE id = ?")
+                .bind(self.id)
+                .fetch_optional(database.pool())
+                .await
+                .context("failed to fetch")?;
+
+        Ok(invites_remained.map(|r| r.remained).unwrap_or(0))
+    }
+
     pub async fn from_access_token(
         token: &str,
         database: &Database,

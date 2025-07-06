@@ -953,6 +953,7 @@ dependencies = [
  "anyhow",
  "axum",
  "axum-cookie",
+ "base64",
  "bcrypt",
  "chrono",
  "hex",

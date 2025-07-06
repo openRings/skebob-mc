@@ -9,6 +9,7 @@ use crate::database::Database;
 mod auth;
 mod database;
 mod error;
+mod invites;
 mod model;
 mod profile;
 
@@ -26,6 +27,7 @@ async fn main() -> anyhow::Result<()> {
     tracing::info!("database migration success");
 
     let router = Router::new()
+        .nest("/invites", invites::get_nest())
         .nest("/profile", profile::get_nest())
         .merge(auth::get_nest())
         .layer(from_fn(error::error_logging_middleware))
