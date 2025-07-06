@@ -1,14 +1,20 @@
 use anyhow::Context;
 use axum::Router;
+use axum::body::Body;
 use axum::extract::FromRequestParts;
-use axum::http::header::AUTHORIZATION;
+use axum::http::StatusCode;
+use axum::http::header::{AUTHORIZATION, CONTENT_TYPE, SET_COOKIE};
 use axum::http::request::Parts;
+use axum::response::{IntoResponse, Response};
 use axum::routing::post;
+use axum_cookie::cookie::Cookie;
 
 use crate::database::Database;
 use crate::error::EndpointError;
+use crate::model::session::NewSession;
 use crate::model::user::User;
 
+mod renewal;
 mod signin;
 mod signup;
 
@@ -16,6 +22,34 @@ pub fn get_nest() -> Router<Database> {
     Router::new()
         .route("/signup", post(signup::signup))
         .route("/signin", post(signin::signin))
+        .route("/renewal", post(renewal::renewal))
+}
+
+impl IntoResponse for NewSession {
+    fn into_response(self) -> Response {
+        let mut refresh_cookie = Cookie::builder("refresh-token", self.refresh_token().to_owned())
+            .http_only(true)
+            .path("/api/auth/renewal")
+            .build();
+
+        if !cfg!(debug_assertions) {
+            refresh_cookie.set_secure(true);
+        }
+
+        let body = Body::new(
+            serde_json::json!({
+                "accessToken": self.access_token()
+            })
+            .to_string(),
+        );
+
+        Response::builder()
+            .status(StatusCode::OK)
+            .header(SET_COOKIE, refresh_cookie.to_string())
+            .header(CONTENT_TYPE, "application/json")
+            .body(body)
+            .expect("must be valid")
+    }
 }
 
 impl FromRequestParts<Database> for User {
