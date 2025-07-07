@@ -33,7 +33,7 @@ async fn create_invite(
     })?;
 
     if invites_remained == 0 {
-        return Err(EndpointError::BadRequest(
+        return Err(EndpointError::Forbidden(
             "Лимит приглашений исчерпан".to_owned(),
         ));
     }

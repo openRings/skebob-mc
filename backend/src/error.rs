@@ -6,6 +6,7 @@ use axum::response::{IntoResponse, Response};
 
 pub enum EndpointError {
     BadRequest(String),
+    Forbidden(String),
     Unauthorized,
     ServerError(anyhow::Error),
 }
@@ -50,6 +51,7 @@ impl IntoResponse for EndpointError {
         match self {
             Self::Unauthorized => StatusCode::UNAUTHORIZED.into_response(),
             Self::BadRequest(message) => error(StatusCode::BAD_REQUEST, &message, None),
+            Self::Forbidden(message) => error(StatusCode::FORBIDDEN, &message, None),
             Self::ServerError(err) => error(
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "Сервис временно недоступен",
