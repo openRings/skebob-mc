@@ -12,7 +12,8 @@ pub struct Session {
     access_token_hash: String,
     refresh_token_hash: String,
     user_id: u64,
-    duration: Duration,
+    access_duration: Duration,
+    refresh_duration: Duration,
     created_at: DateTime<Utc>,
 }
 
@@ -23,7 +24,8 @@ pub struct NewSession {
 }
 
 impl Session {
-    const DEFAULT_SESSION_DURATION: i64 = Duration::days(31).num_seconds();
+    const DEFAULT_ACCESS_TOKEN_DURATION: i64 = Duration::hours(3).num_seconds();
+    const DEFAULT_REFRESH_TOKEN_DURATION: i64 = Duration::days(31).num_seconds();
 
     pub fn id(&self) -> u64 {
         self.id
@@ -35,7 +37,7 @@ impl Session {
     ) -> anyhow::Result<Option<Self>> {
         let refresh_token_hash = format!("{:x}", sha2::Sha256::digest(token));
 
-        sqlx::query_as("SELECT * FROM active_sessions WHERE refresh_token_hash = ?")
+        sqlx::query_as("SELECT * FROM avaliable_sessions WHERE refresh_token_hash = ?")
             .bind(refresh_token_hash)
             .fetch_optional(database.pool())
             .await
@@ -68,7 +70,7 @@ impl Session {
         .bind(access_token_hash)
         .bind(refresh_token_hash)
         .bind(self.user_id)
-        .bind(Self::DEFAULT_SESSION_DURATION)
+        .bind(Self::DEFAULT_ACCESS_TOKEN_DURATION)
         .execute(database.pool())
         .await
         .context("failed to execute: create new session")?;
@@ -83,13 +85,14 @@ impl Session {
         let refresh_token_hash = format!("{:x}", Sha256::digest(new_session.refresh_token()));
 
         sqlx::query(
-            "INSERT INTO sessions(access_token_hash, refresh_token_hash, user_id, duration)
-            VALUES (?, ?, ?, ?)",
+            "INSERT INTO sessions(access_token_hash, refresh_token_hash, user_id, access_duration, refresh_duration)
+            VALUES (?, ?, ?, ?, ?)",
         )
         .bind(access_token_hash)
         .bind(refresh_token_hash)
         .bind(user_id)
-        .bind(Self::DEFAULT_SESSION_DURATION)
+        .bind(Self::DEFAULT_ACCESS_TOKEN_DURATION)
+        .bind(Self::DEFAULT_REFRESH_TOKEN_DURATION)
         .execute(database.pool())
         .await
         .context("failed to execute")?;

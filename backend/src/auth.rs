@@ -28,8 +28,8 @@ pub fn get_nest() -> Router<Database> {
 impl IntoResponse for NewSession {
     fn into_response(self) -> Response {
         let mut refresh_cookie = Cookie::builder("refresh-token", self.refresh_token().to_owned())
-            .http_only(true)
             .path("/api/auth/renewal")
+            .http_only(true)
             .build();
 
         if !cfg!(debug_assertions) {
