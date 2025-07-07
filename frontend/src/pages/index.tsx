@@ -16,14 +16,16 @@ export function Index() {
               src="src/assets/images/villager.png"
               alt="villager"
             />
-            <VStack class="gap-2">
+            <VStack class="gap-3">
               <p class="text-2xl">magwoo</p>
-              <p class="text-dark/50 text-xs">
-                Доступ: <span class="text-success">с 26 апр. 2025</span>
-              </p>
-              <p class="text-dark/50 text-xs">
-                Регистрация: <span class="text-dark">24 апр. 2025</span>
-              </p>
+              <VStack class="gap-1">
+                <p class="text-dark/50 text-sm">
+                  Доступ: <span class="text-success">с 26 апр. 2025</span>
+                </p>
+                <p class="text-dark/50 text-sm">
+                  Регистрация: <span class="text-dark">24 апр. 2025</span>
+                </p>
+              </VStack>
             </VStack>
           </HStack>
           <Button class="w-max self-start">Выйти</Button>
@@ -31,41 +33,44 @@ export function Index() {
       </Block>
       <Block title="Приглашения 3/5">
         <VStack class="gap-4">
-          <HStack class="gap-2">
+          <HStack class="gap-1">
             <Input class="w-full" placeholder="Для лехи" />
             <Button variant="solid">Создать</Button>
           </HStack>
           <HStack class="border-dark/40 justify-between border-l-2 pl-4">
-            <VStack class="gap-2">
-              <p>Для лехи</p>
-              <span class="text-success text-xs">Принято</span>
+            <VStack class="w-3/5 gap-1">
+              <p class="w-full truncate">Для лехи лехи лехи лехи лехи лехи</p>
+              <p class="text-success text-xs">Принято</p>
             </VStack>
-            <VStack class="gap-2">
-              <p class="text-dark/50 text-right">
+            <VStack class="w-2/5 gap-1">
+              <p class="text-dark/50 w-full truncate text-right">
+                Код: <span class="text-dark">scJjPpsg17g</span>
+              </p>
+              <Button class="text-right">Скопировать ссылку</Button>
+            </VStack>
+          </HStack>
+
+          <HStack class="border-dark/40 justify-between border-l-2 pl-4">
+            <VStack class="w-3/5 gap-1">
+              <p class="w-full truncate">dasdasх</p>
+              <p class="text-warn text-xs">Ожидает принятия</p>
+            </VStack>
+
+            <VStack class="w-2/5 gap-1">
+              <p class="text-dark/50 w-full truncate text-right">
                 Код: <span class="text-dark">scJjPpsg17g</span>
               </p>
               <Button class="text-right">Скопировать ссылку</Button>
             </VStack>
           </HStack>
           <HStack class="border-dark/40 justify-between border-l-2 pl-4">
-            <VStack class="gap-2">
-              <p>Игорь лох</p>
-              <span class="text-warn text-xs">Ожидает принятия</span>
+            <VStack class="w-3/5 gap-1">
+              <p class="w-full truncate">Игорь лох</p>
+              <p class="text-warn text-xs">Ожидает принятия</p>
             </VStack>
-            <VStack class="gap-2">
-              <p class="text-dark/50 text-right">
-                Код: <span class="text-dark">scJjPpsg17g</span>
-              </p>
-              <Button class="text-right">Скопировать ссылку</Button>
-            </VStack>
-          </HStack>
-          <HStack class="border-dark/40 justify-between border-l-2 pl-4">
-            <VStack class="gap-2">
-              <p>Никита соси</p>
-              <span class="text-warn text-xs">Ожидает принятия</span>
-            </VStack>
-            <VStack class="gap-2">
-              <p class="text-dark/50 text-right">
+
+            <VStack class="w-2/5 gap-1">
+              <p class="text-dark/50 w-full truncate text-right">
                 Код: <span class="text-dark">scJjPpsg17g</span>
               </p>
               <Button class="text-right">Скопировать ссылку</Button>

@@ -17,7 +17,7 @@ export function Button(props: Props) {
   return (
     <button
       class={[
-        "cursor-pointer bg-none text-xs transition-colors",
+        "cursor-pointer bg-none text-sm transition-colors",
         baseClass,
         local.class,
       ].join(" ")}

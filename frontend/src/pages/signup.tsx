@@ -7,11 +7,14 @@ export function Signup() {
     <div class="flex h-screen w-full items-center justify-center">
       <VStack class="w-max items-center gap-12">
         <h1 class="text-dark/50 w-full text-center text-4xl">Регистрация</h1>
-        <VStack class="gap-2">
-          <Input placeholder="Никнейм" />
-          <Input placeholder="Пароль" />
-          <Input placeholder="Код приглашения" />
-          <Input placeholder="Повторите пароль" />
+
+        <VStack class="gap-6">
+          <VStack class="gap-2">
+            <Input placeholder="Никнейм" />
+            <Input placeholder="Пароль" />
+            <Input placeholder="Код приглашения" />
+            <Input placeholder="Повторите пароль" />
+          </VStack>
           <Button variant="solid" class="text-center">
             Создать
           </Button>
