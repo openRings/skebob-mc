@@ -92,7 +92,10 @@ export function Signin(): JSX.Element {
           </Button>
           <p class="text-center text-xs">
             Еще нет аккаунта? <br />
-            <A class="text-blue-800 underline" href="/signup">
+            <A
+              class="text-blue-800 underline transition-colors hover:text-blue-700"
+              href="/signup"
+            >
               Зарегистрироваться
             </A>
           </p>
