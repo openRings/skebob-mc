@@ -7,7 +7,7 @@ import { Input } from "@components/uikit/Input";
 export function Index() {
   return (
     <VStack class="items-center gap-12">
-      <h1 class="text-dark/50 mt-16 w-full text-center text-5xl">SkebobMC</h1>
+      <h1 class="text-dark/50 mt-16 w-full text-center text-4xl">SkebobMC</h1>
       <Block title="Профиль">
         <HStack class="justify-between">
           <HStack class="w-full items-center gap-4 py-4">

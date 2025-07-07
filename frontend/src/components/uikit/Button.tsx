@@ -8,7 +8,8 @@ export function Button(props: Props) {
   const [local, attrs] = splitProps(props, ["class", "variant"]);
 
   const buttonClasses = {
-    solid: "text-dark bg-dark/10 px-3 py-2 flex items-center",
+    solid:
+      "text-white/80 hover:text-white/70 bg-dark/80 px-4 py-3 text-center rounded-sm",
     transparent: "text-dark/50",
   };
 
@@ -16,7 +17,7 @@ export function Button(props: Props) {
   return (
     <button
       class={[
-        "hover:text-dark/70 cursor-pointer bg-none text-xs transition-colors",
+        "cursor-pointer bg-none text-xs transition-colors",
         baseClass,
         local.class,
       ].join(" ")}
