@@ -1,3 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Minecraft";
+  font-style: normal;
+  font-weight: 400;
+  src: url("assets/fonts/minecraft.ttf") format("woff2");
+}
+
+@theme {
+  --font-minecraft: Minecraft, sans-serif;
+
+  --color-neutral: #e8e4e3;
+  --color-dark: #363636;
+  --color-success: #62b158;
+  --color-warn: #a9a539;
+}

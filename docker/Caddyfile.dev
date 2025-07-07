@@ -1,4 +1,4 @@
-http://app.ru {
+http://localhost {
 	encode gzip zstd
 
 	handle_path /api/* {
