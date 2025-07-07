@@ -10,12 +10,13 @@ export function Button(props: Props) {
   const buttonClasses = {
     solid:
       "text-white/80 hover:text-white/70 bg-dark/80 px-4 py-3 text-center rounded-sm",
-    transparent: "text-dark/50",
+    transparent: "text-dark/70 hover:text-dark/50",
   };
 
   const baseClass = buttonClasses[local.variant ?? "transparent"];
   return (
     <button
+      {...attrs}
       class={[
         "cursor-pointer bg-none text-sm transition-colors",
         baseClass,
