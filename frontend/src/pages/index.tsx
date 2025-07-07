@@ -6,9 +6,12 @@ import { Input } from "@components/uikit/Input";
 import { createResource } from "solid-js";
 
 export function useProfile() {
+  const navigate = useNavigate();
+
   const [profile, { refetch }] = createResource<ProfileResponse>(async () => {
     const token = localStorage.getItem("access_token");
     if (!token) {
+      navigate("/signin");
       throw new Error("Пользователь не авторизован");
     }
 
