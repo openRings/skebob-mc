@@ -4,12 +4,11 @@ use axum::response::IntoResponse;
 use axum_cookie::CookieManager;
 use sha2::{Digest, Sha256};
 
-use crate::commands::session::create::SessionCreateCommand;
-use crate::commands::session::detele::SessionDeleteCommand;
+use crate::commands::{SessionCreateCommand, SessionDeleteCommand};
 use crate::database::Database;
-use crate::handlers::error::EndpointError;
-use crate::model::session::NewSession;
-use crate::queries::session::by_refresh::SessionByRefreshQuery;
+use crate::handlers::EndpointError;
+use crate::model::NewSession;
+use crate::queries::SessionByRefreshQuery;
 
 pub async fn renewal(
     State(database): State<Database>,

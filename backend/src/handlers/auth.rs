@@ -12,9 +12,9 @@ use sha2::{Digest, Sha256};
 
 use crate::database::Database;
 use crate::handlers::error::EndpointError;
-use crate::model::session::NewSession;
-use crate::model::user::User;
-use crate::queries::user::by_token::UserByTokenQuery;
+use crate::model::NewSession;
+use crate::model::User;
+use crate::queries::UserByTokenQuery;
 
 mod renewal;
 mod signin;

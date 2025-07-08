@@ -5,10 +5,10 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use bcrypt::Version;
 
-use crate::commands::user::create::UserCreateCommand;
+use crate::commands::UserCreateCommand;
 use crate::database::Database;
 use crate::handlers::error::EndpointError;
-use crate::queries::user::by_nickname::UserByNickname;
+use crate::queries::UserByNickname;
 
 #[derive(serde::Deserialize)]
 pub struct SignupBody {

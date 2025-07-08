@@ -3,11 +3,11 @@ use axum::Json;
 use axum::extract::State;
 use axum::response::IntoResponse;
 
-use crate::commands::session::create::SessionCreateCommand;
+use crate::commands::SessionCreateCommand;
 use crate::database::Database;
 use crate::handlers::error::EndpointError;
-use crate::model::session::NewSession;
-use crate::queries::user::by_nickname::UserByNickname;
+use crate::model::NewSession;
+use crate::queries::UserByNickname;
 
 #[derive(serde::Deserialize)]
 pub struct SigninBody {

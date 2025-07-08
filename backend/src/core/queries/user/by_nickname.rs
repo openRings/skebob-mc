@@ -1,6 +1,7 @@
 use anyhow::Context;
 
-use crate::{database::Executor, model::user::User};
+use crate::database::Executor;
+use crate::model::User;
 
 pub struct UserByNickname;
 

@@ -1,7 +1,7 @@
 use anyhow::Context;
 
 use crate::database::Executor;
-use crate::model::session::Session;
+use crate::model::Session;
 
 pub struct SessionByRefreshQuery;
 

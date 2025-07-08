@@ -1,6 +1,6 @@
 use rand::Rng;
 use sha2::{Digest, Sha256};
-use sqlx::prelude::FromRow;
+use sqlx::FromRow;
 
 #[derive(FromRow, Clone)]
 pub struct Session {

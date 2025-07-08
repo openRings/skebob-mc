@@ -3,6 +3,8 @@ use axum_cookie::CookieLayer;
 
 use crate::database::Database;
 
+pub use self::error::EndpointError;
+
 mod auth;
 mod error;
 mod invites;

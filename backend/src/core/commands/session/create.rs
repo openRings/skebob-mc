@@ -2,7 +2,7 @@ use anyhow::Context;
 use chrono::Duration;
 
 use crate::database::Executor;
-use crate::model::session::NewSession;
+use crate::model::NewSession;
 
 const DEFAULT_ACCESS_TOKEN_DURATION: i64 = Duration::hours(3).num_seconds();
 const DEFAULT_REFRESH_TOKEN_DURATION: i64 = Duration::days(31).num_seconds();

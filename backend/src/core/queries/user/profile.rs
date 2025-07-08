@@ -3,7 +3,8 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 use sqlx::FromRow;
 
-use crate::database::Executor;
+use crate::core::Operation;
+use crate::database::Database;
 
 #[derive(FromRow, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -14,13 +15,18 @@ pub struct UserProfile {
     invited: Option<DateTime<Utc>>,
 }
 
-pub struct UserProfileQuery;
+pub struct UserProfileQuery {
+    database: Database,
+}
+
+impl Operation for UserProfileQuery {
+    fn new(database: Database) -> Self {
+        Self { database }
+    }
+}
 
 impl UserProfileQuery {
-    pub async fn execute<'a>(
-        user_id: u64,
-        executor: impl Executor<'a>,
-    ) -> anyhow::Result<Option<UserProfile>> {
+    pub async fn execute(&self, user_id: u64) -> anyhow::Result<Option<UserProfile>> {
         sqlx::query_as(
             "SELECT u.nickname, u.max_invites, u.created_at, i.used_at as invited
             FROM users u
@@ -28,7 +34,7 @@ impl UserProfileQuery {
             WHERE u.id = ?",
         )
         .bind(user_id)
-        .fetch_optional(executor)
+        .fetch_optional(self.database.pool())
         .await
         .context("failed to fetch")
     }

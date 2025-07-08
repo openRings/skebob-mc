@@ -6,11 +6,11 @@ use axum::{Json, Router};
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
 
-use crate::commands::invite::create::InviteCreateCommand;
+use crate::commands::InviteCreateCommand;
 use crate::database::Database;
-use crate::handlers::error::EndpointError;
-use crate::model::user::User;
-use crate::queries::invites::remained::InvitesRemainedQuery;
+use crate::handlers::EndpointError;
+use crate::model::User;
+use crate::queries::InvitesRemainedQuery;
 
 const CODE_BYTES_LEN: usize = 8;
 

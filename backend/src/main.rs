@@ -1,13 +1,15 @@
 use anyhow::Context;
 use tokio::net::TcpListener;
 
-use crate::database::Database;
+use self::database::Database;
 
-mod commands;
+pub use self::core::commands;
+pub use self::core::queries;
+
+mod core;
 mod database;
 mod handlers;
 mod model;
-mod queries;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

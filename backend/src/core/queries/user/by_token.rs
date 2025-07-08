@@ -1,7 +1,7 @@
 use anyhow::Context;
 
 use crate::database::Executor;
-use crate::model::user::User;
+use crate::model::User;
 
 pub struct UserByTokenQuery;
 
