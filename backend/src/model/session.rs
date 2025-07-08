@@ -19,16 +19,18 @@ pub struct Session {
 
 #[derive(Clone)]
 pub struct NewSession {
+    user_id: u64,
     access_token: String,
     refresh_token: String,
 }
 
 impl Session {
-    const DEFAULT_ACCESS_TOKEN_DURATION: i64 = Duration::hours(3).num_seconds();
-    const DEFAULT_REFRESH_TOKEN_DURATION: i64 = Duration::days(31).num_seconds();
-
     pub fn id(&self) -> u64 {
         self.id
+    }
+
+    pub fn user_id(&self) -> u64 {
+        self.user_id
     }
 
     pub async fn from_refresh_token(
@@ -43,66 +45,10 @@ impl Session {
             .await
             .context("failed to fetch")
     }
-
-    pub async fn renewal(&self, database: &Database) -> anyhow::Result<NewSession> {
-        let mut transaction = database
-            .pool()
-            .begin()
-            .await
-            .context("failed to begin transaction")?;
-
-        sqlx::query("DETELE FROM sessions WHERE id = ?")
-            .bind(self.id)
-            .execute(&mut *transaction)
-            .await
-            .context("failed to execute: old session delete")?;
-
-        // FIXME: remove code dublication
-        let new_session = NewSession::new();
-
-        let access_token_hash = format!("{:x}", Sha256::digest(new_session.access_token()));
-        let refresh_token_hash = format!("{:x}", Sha256::digest(new_session.refresh_token()));
-
-        sqlx::query(
-            "INSERT INTO sessions(access_token_hash, refresh_token_hash, user_id, duration)
-            VALUES (?, ?, ?, ?)",
-        )
-        .bind(access_token_hash)
-        .bind(refresh_token_hash)
-        .bind(self.user_id)
-        .bind(Self::DEFAULT_ACCESS_TOKEN_DURATION)
-        .execute(database.pool())
-        .await
-        .context("failed to execute: create new session")?;
-
-        Ok(new_session)
-    }
-
-    pub async fn generate_for(user_id: u64, database: &Database) -> anyhow::Result<NewSession> {
-        let new_session = NewSession::new();
-
-        let access_token_hash = format!("{:x}", Sha256::digest(new_session.access_token()));
-        let refresh_token_hash = format!("{:x}", Sha256::digest(new_session.refresh_token()));
-
-        sqlx::query(
-            "INSERT INTO sessions(access_token_hash, refresh_token_hash, user_id, access_duration, refresh_duration)
-            VALUES (?, ?, ?, ?, ?)",
-        )
-        .bind(access_token_hash)
-        .bind(refresh_token_hash)
-        .bind(user_id)
-        .bind(Self::DEFAULT_ACCESS_TOKEN_DURATION)
-        .bind(Self::DEFAULT_REFRESH_TOKEN_DURATION)
-        .execute(database.pool())
-        .await
-        .context("failed to execute")?;
-
-        Ok(new_session)
-    }
 }
 
 impl NewSession {
-    pub fn new() -> Self {
+    pub fn new(user_id: u64) -> Self {
         let mut rng = rand::rng();
 
         let access_token_bytes = rng.random::<[u8; 32]>();
@@ -112,9 +58,14 @@ impl NewSession {
         let refresh_token = hex::encode(refresh_token_bytes);
 
         Self {
+            user_id,
             access_token,
             refresh_token,
         }
+    }
+
+    pub fn user_id(&self) -> u64 {
+        self.user_id
     }
 
     pub fn access_token(&self) -> &str {
@@ -123,5 +74,13 @@ impl NewSession {
 
     pub fn refresh_token(&self) -> &str {
         &self.refresh_token
+    }
+
+    pub fn access_token_hash(&self) -> String {
+        format!("{:x}", Sha256::digest(self.access_token()))
+    }
+
+    pub fn refresh_token_hash(&self) -> String {
+        format!("{:x}", Sha256::digest(self.refresh_token()))
     }
 }

@@ -25,10 +25,10 @@ CREATE VIEW `invited_users` AS
     JOIN invite_uses ON users.id = invite_uses.used_by;
 
 CREATE VIEW user_invites_remained AS
-    SELECT u.id, u.nickname, (u.max_invites - IFNULL(i.invites_count, 0)) AS remained FROM users u
+    SELECT u.id, u.nickname, (u.max_invites - IFNULL(i.invites_count, 0)) AS remained , iu.id IS NOT NULL AS can_invite FROM users u
+    LEFT JOIN invite_uses as iu ON u.id = iu.used_by
     LEFT JOIN (
         SELECT created_by, COUNT(*) AS invites_count FROM invites 
         GROUP BY created_by
     ) i
         ON u.id = i.created_by;
-
