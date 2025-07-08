@@ -34,7 +34,7 @@ async fn create_invite(
 
     if !invites_remained.can_invite {
         return Err(EndpointError::Forbidden(
-            "Создание приглашений доступно только пришлашеным игрокам".to_owned(),
+            "Создание приглашений доступно только приглашенным пользователям".to_owned(),
         ));
     }
 
