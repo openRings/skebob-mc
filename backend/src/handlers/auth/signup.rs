@@ -3,10 +3,12 @@ use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
+use bcrypt::Version;
 
+use crate::commands::UserCreateCommand;
 use crate::database::Database;
-use crate::error::EndpointError;
-use crate::model::user::User;
+use crate::handlers::error::EndpointError;
+use crate::queries::UserByNickname;
 
 #[derive(serde::Deserialize)]
 pub struct SignupBody {
@@ -29,18 +31,22 @@ pub async fn signup(
         return Err(EndpointError::BadRequest(message.to_string()));
     }
 
-    if let Some(_user) = User::from_nickname(&nickname, &database)
+    if let Some(_user) = UserByNickname::execute(&nickname, database.pool())
         .await
-        .with_context(|| format!("failed to search by nickname: {nickname}"))?
+        .with_context(|| format!("failed to check is user exists by nickname: {nickname}"))?
     {
         tracing::warn!("tries to register existed nickname: {}", nickname);
 
         return Err(EndpointError::BadRequest(format!(
-            "Ник {nickname} уже существует",
+            "Ник {nickname} уже используется",
         )));
     }
 
-    User::create(&nickname, &password, &database)
+    let password_hash = bcrypt::hash_with_result(password, 10)
+        .context("failed to hash password")?
+        .format_for_version(Version::TwoA);
+
+    UserCreateCommand::execute(&nickname, &password_hash, database.pool())
         .await
         .with_context(|| format!("failed to create user: {nickname}"))?;
 
