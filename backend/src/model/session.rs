@@ -1,20 +1,16 @@
-use anyhow::Context;
-use chrono::{DateTime, Duration, Utc};
 use rand::Rng;
 use sha2::{Digest, Sha256};
 use sqlx::prelude::FromRow;
 
-use crate::database::Database;
-
 #[derive(FromRow, Clone)]
 pub struct Session {
     id: u64,
-    access_token_hash: String,
-    refresh_token_hash: String,
+    // access_token_hash: String,
+    // refresh_token_hash: String,
     user_id: u64,
-    access_duration: Duration,
-    refresh_duration: Duration,
-    created_at: DateTime<Utc>,
+    // access_duration: Duration,
+    // refresh_duration: Duration,
+    // created_at: DateTime<Utc>,
 }
 
 #[derive(Clone)]
@@ -31,19 +27,6 @@ impl Session {
 
     pub fn user_id(&self) -> u64 {
         self.user_id
-    }
-
-    pub async fn from_refresh_token(
-        token: &str,
-        database: &Database,
-    ) -> anyhow::Result<Option<Self>> {
-        let refresh_token_hash = format!("{:x}", sha2::Sha256::digest(token));
-
-        sqlx::query_as("SELECT * FROM avaliable_sessions WHERE refresh_token_hash = ?")
-            .bind(refresh_token_hash)
-            .fetch_optional(database.pool())
-            .await
-            .context("failed to fetch")
     }
 }
 

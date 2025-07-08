@@ -16,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
     let database = Database::new()?;
 
     sqlx::migrate!()
-        .run(&*database)
+        .run(database.pool())
         .await
         .context("failed to migrate")?;
 
