@@ -1,7 +1,7 @@
-pub use self::invites::*;
+pub use self::invite::*;
 pub use self::session::*;
 pub use self::user::*;
 
-mod invites;
+mod invite;
 mod session;
 mod user;
