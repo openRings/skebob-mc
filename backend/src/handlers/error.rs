@@ -8,6 +8,7 @@ pub enum EndpointError {
     BadRequest(String),
     Forbidden(String),
     Unauthorized,
+    NotFound,
     ServerError(anyhow::Error),
 }
 
@@ -50,6 +51,7 @@ impl IntoResponse for EndpointError {
 
         match self {
             Self::Unauthorized => StatusCode::UNAUTHORIZED.into_response(),
+            Self::NotFound => StatusCode::NOT_FOUND.into_response(),
             Self::BadRequest(message) => error(StatusCode::BAD_REQUEST, &message, None),
             Self::Forbidden(message) => error(StatusCode::FORBIDDEN, &message, None),
             Self::ServerError(err) => error(
