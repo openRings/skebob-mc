@@ -1,17 +1,15 @@
 use anyhow::Context;
-use axum::Router;
-use axum::middleware::from_fn;
-use axum_cookie::CookieLayer;
 use tokio::net::TcpListener;
 
-use crate::database::Database;
+use self::database::Database;
 
-mod auth;
+pub use self::core::commands;
+pub use self::core::queries;
+
+mod core;
 mod database;
-mod error;
-mod invites;
+mod handlers;
 mod model;
-mod profile;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -20,19 +18,13 @@ async fn main() -> anyhow::Result<()> {
     let database = Database::new()?;
 
     sqlx::migrate!()
-        .run(&*database)
+        .run(database.pool())
         .await
         .context("failed to migrate")?;
 
     tracing::info!("database migration success");
 
-    let router = Router::new()
-        .nest("/invites", invites::get_nest())
-        .nest("/profile", profile::get_nest())
-        .merge(auth::get_nest())
-        .layer(from_fn(error::error_logging_middleware))
-        .layer(CookieLayer::strict())
-        .with_state(database);
+    let router = handlers::create_router(database);
 
     let listener = TcpListener::bind("0.0.0.0:80")
         .await

@@ -8,11 +8,13 @@ use axum::http::request::Parts;
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum_cookie::cookie::Cookie;
+use sha2::{Digest, Sha256};
 
 use crate::database::Database;
-use crate::error::EndpointError;
-use crate::model::session::NewSession;
-use crate::model::user::User;
+use crate::handlers::error::EndpointError;
+use crate::model::NewSession;
+use crate::model::User;
+use crate::queries::UserByTokenQuery;
 
 mod renewal;
 mod signin;
@@ -28,8 +30,8 @@ pub fn get_nest() -> Router<Database> {
 impl IntoResponse for NewSession {
     fn into_response(self) -> Response {
         let mut refresh_cookie = Cookie::builder("refresh-token", self.refresh_token().to_owned())
+            .path("/api/renewal")
             .http_only(true)
-            .path("/api/auth/renewal")
             .build();
 
         if !cfg!(debug_assertions) {
@@ -74,14 +76,12 @@ impl FromRequestParts<Database> for User {
         }
 
         let access_token = auth_header.trim_start_matches("bearer").trim();
+        let access_token_hash = format!("{:x}", Sha256::digest(access_token));
 
-        let user = User::from_access_token(access_token, state)
+        let user = UserByTokenQuery::execute(&access_token_hash, state.pool())
             .await
             .with_context(|| {
-                format!(
-                    "failed to get user from access token: ..{}",
-                    access_token.chars().rev().take(6).collect::<String>()
-                )
+                format!("failed to get user from access token, token hash: {access_token_hash}",)
             })?
             .ok_or(EndpointError::Unauthorized)?;
 

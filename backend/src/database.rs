@@ -1,6 +1,8 @@
 use anyhow::Context;
-use sqlx::MySqlPool;
+use sqlx::{MySql, MySqlPool};
 use std::ops::{Deref, DerefMut};
+
+pub trait Executor<'a>: sqlx::Executor<'a, Database = MySql> {}
 
 #[derive(Clone)]
 pub struct Database {
@@ -21,6 +23,8 @@ impl Database {
         &self.pool
     }
 }
+
+impl<'a, E> Executor<'a> for E where E: sqlx::Executor<'a, Database = MySql> {}
 
 impl Deref for Database {
     type Target = MySqlPool;

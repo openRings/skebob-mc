@@ -3,9 +3,11 @@ use axum::Json;
 use axum::extract::State;
 use axum::response::IntoResponse;
 
+use crate::commands::SessionCreateCommand;
 use crate::database::Database;
-use crate::error::EndpointError;
-use crate::model::user::User;
+use crate::handlers::error::EndpointError;
+use crate::model::NewSession;
+use crate::queries::UserByNickname;
 
 #[derive(serde::Deserialize)]
 pub struct SigninBody {
@@ -19,19 +21,20 @@ pub async fn signin(
 ) -> Result<impl IntoResponse, EndpointError> {
     let SigninBody { nickname, password } = body;
 
-    let user = User::from_nickname(&nickname, &database)
+    let user = UserByNickname::execute(&nickname, database.pool())
         .await
         .with_context(|| format!("failed to get by nickname: {nickname}"))?;
 
     if let Some(ref user) = user
         && user.validate_password(&password)?
     {
-        let session = user
-            .generate_session(&database)
-            .await
-            .with_context(|| format!("failed to generate session for: {nickname}"))?;
+        let session = NewSession::new(user.id());
 
-        tracing::info!("user signed: {}", nickname);
+        SessionCreateCommand::execute(&session, database.pool())
+            .await
+            .with_context(|| format!("failed to create session for user: {nickname}"))?;
+
+        tracing::info!("user signed: {nickname}");
 
         return Ok(session);
     } else if user.is_some() {
