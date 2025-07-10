@@ -35,7 +35,7 @@ services:
       EULA: TRUE
       TYPE: PAPER
       VERSION: 1.21.1
-      MEMORY: 4G
+      MEMORY: 1G
       MOTD: Памидоры памидоры помидоры
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
