@@ -28,7 +28,10 @@ impl UserPluginCreateCommand {
         sqlx::query(
             format!(
                 "INSERT INTO {}(uuid, hashed_password, salt, algo, last_nickname)
-                VALUES (?, ?, ?, ?, ?)",
+                VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE
+                    hashed_password = VALUES(hashed_password),
+                    salt = VALUES(salt),
+                    algo = VALUES(algo)",
                 Self::PLUGIN_TABLE_NAME
             )
             .as_str(),
