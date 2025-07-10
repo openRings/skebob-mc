@@ -5,3 +5,5 @@ pub use self::user::*;
 mod invite;
 mod session;
 mod user;
+
+pub mod dto;
