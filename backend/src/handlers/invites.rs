@@ -5,7 +5,8 @@ use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use base64::Engine;
-use base64::engine::general_purpose::STANDARD_NO_PAD;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+use serde::Deserialize;
 
 use crate::commands::{InviteCreateCommand, InviteUseCommand};
 use crate::core::Op;
@@ -34,11 +35,19 @@ async fn my_invites(
     Ok(Json(invites))
 }
 
+#[derive(Clone, Deserialize)]
+pub struct CreateInviteBody {
+    name: Option<String>,
+}
+
 async fn create_invite(
     Op(invite_create): Op<InviteCreateCommand>,
     Op(invite_remained): Op<InviteRemainedQuery>,
     user: User,
+    Json(body): Json<CreateInviteBody>,
 ) -> Result<impl IntoResponse, EndpointError> {
+    let CreateInviteBody { name } = body;
+
     let invite_remained = invite_remained
         .execute(user.id())
         .await
@@ -63,10 +72,10 @@ async fn create_invite(
     }
 
     let code_bytes = rand::random::<[u8; CODE_BYTES_LEN]>();
-    let code = STANDARD_NO_PAD.encode(code_bytes);
+    let code = URL_SAFE_NO_PAD.encode(code_bytes);
 
     invite_create
-        .execute(user.id(), &code)
+        .execute(name.as_deref(), user.id(), &code)
         .await
         .with_context(|| format!("failed to create invite for user: {}", user.nickname()))?;
 
