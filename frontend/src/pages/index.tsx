@@ -12,6 +12,12 @@ interface ProfileData {
   invited: string | null;
 }
 
+const formatter = new Intl.DateTimeFormat("ru-RU", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
 export function Index() {
   const navigate = useNavigate();
 
@@ -71,7 +77,7 @@ export function Index() {
                   <p class="text-dark/50 text-sm">
                     Доступ:{" "}
                     <span class="text-success">
-                      {new Date(profile().createdAt).toLocaleDateString()}
+                      {formatter.format(new Date(profile().createdAt))}
                     </span>
                   </p>
                   <p class="text-dark/50 text-sm">
