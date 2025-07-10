@@ -35,8 +35,28 @@ export function Index() {
   const [copied, setCopied] = createSignal<string | null>(null);
   const [creationError, setCreationError] = createSignal("");
 
-  const profileFetcher = () => apiFetcher("/api/profile");
-  const invitesFetcher = () => apiFetcher("/api/invites");
+  const profileFetcher = async () => {
+    try {
+      return await apiFetcher("/api/profile");
+    } catch (error) {
+      if (error instanceof Error && error.message === "UNAUTHORIZED") {
+        localStorage.removeItem("access_token");
+        navigate("/signin");
+      }
+      throw error;
+    }
+  };
+  const invitesFetcher = async () => {
+    try {
+      return await apiFetcher("/api/invites");
+    } catch (error) {
+      if (error instanceof Error && error.message === "UNAUTHORIZED") {
+        localStorage.removeItem("access_token");
+        navigate("/signin");
+      }
+      throw error;
+    }
+  };
 
   const [profile, { refetch: refetchProfile }] = createResource(profileFetcher);
   const [invites, { refetch: refetchInvites }] = createResource(invitesFetcher);

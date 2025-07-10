@@ -31,7 +31,7 @@ export const handleApiError = async (
           }
         }
       }
-      throw new Error("Авторизуйтесь еще раз!");
+      throw new Error("UNAUTHORIZED");
     }
     throw new Error(message);
   }
@@ -63,6 +63,7 @@ export const apiFetcher = async (
     clearTimeout(timeoutId);
 
     if (response.status === 401 && retryCount < maxRetries) {
+      console.log("piska piska");
       const tokenRenewed = await renewAccessToken();
       if (tokenRenewed) {
         return await apiFetcher(endpoint, options, retryCount + 1, maxRetries);
@@ -89,7 +90,13 @@ const renewAccessToken = async (): Promise<boolean> => {
     });
 
     if (response.ok) {
-      return true;
+      const data = await response.json();
+      if (data.accessToken) {
+        localStorage.setItem("access_token", data.accessToken);
+        console.log(data.accessToken);
+        return true;
+      }
+      return false;
     }
     return false;
   } catch {
