@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
 import { createResource, createSignal, onCleanup, Show } from "solid-js";
 import { Modal } from "@components/Modal";
+import { apiFetcher } from "src/helpers/api";
 
 interface ProfileData {
   nickname: string;
@@ -26,64 +27,6 @@ const formatter = new Intl.DateTimeFormat("ru-RU", {
   year: "numeric",
 });
 
-const apiFetcher = async (endpoint: string, options: RequestInit = {}) => {
-  const accessToken = localStorage.getItem("access_token");
-  if (!accessToken) {
-    throw new Error("Отсутствует токен авторизации");
-  }
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-  try {
-    const response = await fetch(endpoint, {
-      ...options,
-      signal: controller.signal,
-      headers: {
-        ...options.headers,
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    clearTimeout(timeoutId);
-
-    if (response.status === 401) {
-      throw new Error("Авторизуйтесь еще раз!");
-    }
-
-    if (!response.ok) {
-      let message = `HTTP error ${response.status}`;
-      const contentType = response.headers.get("Content-Type");
-
-      if (contentType?.includes("application/json")) {
-        try {
-          const errorData = await response.json();
-          message = errorData?.error || response.statusText || message;
-        } catch {
-          message = response.statusText || "Не удалось разобрать ответ сервера";
-        }
-      } else {
-        const errorText = await response.text();
-        message = errorText || response.statusText || "Ошибка сервера";
-      }
-
-      throw new Error(message);
-    }
-
-    const contentType = response.headers.get("Content-Type");
-    if (contentType?.includes("application/json")) {
-      return await response.json();
-    }
-
-    return null;
-  } catch (error) {
-    throw error instanceof Error ? error : new Error("Неизвестная ошибка");
-  } finally {
-    clearTimeout(timeoutId);
-  }
-};
-
 export function Index() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams<{ code?: string }>();
@@ -98,14 +41,14 @@ export function Index() {
   const [profile, { refetch: refetchProfile }] = createResource(profileFetcher);
   const [invites, { refetch: refetchInvites }] = createResource(invitesFetcher);
 
-  const [isModalOpen, setIsModalOpen] = createSignal(
-    !!searchParams.code && !profile()?.invited,
-  );
-
   const inviteCode =
     typeof searchParams.code === "string" && searchParams.code
       ? searchParams.code
       : "";
+
+  const [isModalOpen, setIsModalOpen] = createSignal(
+    !!searchParams.code && !profile()?.invited && inviteCode.length > 0,
+  );
 
   const handleError = (error: unknown, defaultMessage: string) => {
     setCreationError(error instanceof Error ? error.message : defaultMessage);
@@ -246,7 +189,9 @@ export function Index() {
             <Show
               when={invites() && invites().length > 0}
               fallback={
-                <p class="text-dark/50 p-4">Нет созданных приглашений</p>
+                <p class="text-dark/50 p-4 text-center">
+                  Нет созданных приглашений
+                </p>
               }
             >
               <VStack class="gap-4">

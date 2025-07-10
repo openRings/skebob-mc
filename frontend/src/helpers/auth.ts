@@ -1,9 +1,11 @@
+import { handleApiError } from "./api";
+
 export const signup = async (
   nickname: string,
   password: string,
-  passwordRepeat: string,
+  repeatPassword: string,
 ) => {
-  return await fetch("/api/signup", {
+  const response = await fetch("/api/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -11,32 +13,19 @@ export const signup = async (
     body: JSON.stringify({
       nickname,
       password,
-      password_repeat: passwordRepeat,
+      password_repeat: repeatPassword,
     }),
   });
+  await handleApiError(response);
+  return response;
 };
 
 export const signin = async (nickname: string, password: string) => {
-  return await fetch("/api/signin", {
+  const response = await fetch("/api/signin", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ nickname, password }),
   });
-};
-
-export const handleApiError = async (response: Response): Promise<void> => {
-  if (!response.ok) {
-    const errorText = await response.text();
-    let message;
-    try {
-      const { error: serverError } = JSON.parse(errorText);
-      message = serverError || response.statusText;
-    } catch {
-      message = errorText || "Неизвестная ошибка";
-    }
-    if (response.status === 401) {
-      throw new Error("Авторизуйтесь еще раз!");
-    }
-    throw new Error(message);
-  }
+  await handleApiError(response);
+  return response;
 };

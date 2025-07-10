@@ -1,9 +1,10 @@
-import { createSignal, createResource, JSX, createEffect } from "solid-js";
+import { createSignal, JSX, createEffect } from "solid-js";
 import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
-import { handleApiError, signin, signup } from "src/helpers/auth";
+import { signin, signup } from "src/helpers/auth";
+import { handleApiError } from "src/helpers/api";
 
 export function Signup(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
