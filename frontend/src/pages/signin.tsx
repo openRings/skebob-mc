@@ -2,13 +2,21 @@ import { createSignal, createResource, JSX } from "solid-js";
 import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
-import { A, useNavigate } from "@solidjs/router";
+import { A, useNavigate, useSearchParams } from "@solidjs/router";
 
 export function Signin(): JSX.Element {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [nickname, setNickname] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
   const [error, setError] = createSignal<string>("");
   const [loading, setLoading] = createSignal<boolean>(false);
+
+  const [inviteCode, setInviteCode] = createSignal<string>(
+    (Array.isArray(searchParams.code)
+      ? searchParams.code[0]
+      : searchParams.code) || "",
+  );
 
   const navigate = useNavigate();
 
@@ -44,7 +52,11 @@ export function Signin(): JSX.Element {
       if (accessToken) {
         localStorage.setItem("access_token", accessToken);
       }
-      navigate("/");
+      if (inviteCode()) {
+        navigate(`/?code=${inviteCode()}`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Неизвестная ошибка");
     } finally {
@@ -83,7 +95,7 @@ export function Signin(): JSX.Element {
             Еще нет аккаунта? <br />
             <A
               class="text-blue-800 underline transition-colors hover:text-blue-700"
-              href="/signup"
+              href={inviteCode() ? `/signup?code=${inviteCode()}` : "/signup"}
             >
               Зарегистрироваться
             </A>

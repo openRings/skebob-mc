@@ -1,9 +1,10 @@
 import { Button } from "@components/uikit/Button";
 import { Block } from "@components/uikit/Block";
 import { HStack, VStack } from "@components/uikit/Stack";
-import { useNavigate } from "@solidjs/router";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
 import { createResource, createSignal, onCleanup, Show } from "solid-js";
+import { Modal } from "@components/Modal";
 
 interface ProfileData {
   nickname: string;
@@ -13,6 +14,7 @@ interface ProfileData {
 }
 
 interface Invite {
+  name: string;
   code: string;
   created_at: Date;
   used_by: string | null;
@@ -51,19 +53,41 @@ const apiFetcher = async (endpoint: string, options: RequestInit = {}) => {
     }
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.error || `HTTP error ${response.status}`);
+      let message = `HTTP error ${response.status}`;
+      const contentType = response.headers.get("Content-Type");
+
+      if (contentType?.includes("application/json")) {
+        try {
+          const errorData = await response.json();
+          message = errorData?.error || response.statusText || message;
+        } catch {
+          message = response.statusText || "Не удалось разобрать ответ сервера";
+        }
+      } else {
+        const errorText = await response.text();
+        message = errorText || response.statusText || "Ошибка сервера";
+      }
+
+      throw new Error(message);
     }
 
-    return await response.json();
+    const contentType = response.headers.get("Content-Type");
+    if (contentType?.includes("application/json")) {
+      return await response.json();
+    }
+
+    return null;
   } catch (error) {
+    throw error instanceof Error ? error : new Error("Неизвестная ошибка");
+  } finally {
     clearTimeout(timeoutId);
-    throw error;
   }
 };
 
 export function Index() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams<{ code?: string }>();
+
   const [targetNickname, setTargetNickname] = createSignal("");
   const [copied, setCopied] = createSignal<string | null>(null);
   const [creationError, setCreationError] = createSignal("");
@@ -74,31 +98,35 @@ export function Index() {
   const [profile, { refetch: refetchProfile }] = createResource(profileFetcher);
   const [invites, { refetch: refetchInvites }] = createResource(invitesFetcher);
 
-  const createInvite = async () => {
-    if (!targetNickname().trim()) {
-      setCreationError("Введите никнейм");
-      return;
-    }
+  const [isModalOpen, setIsModalOpen] = createSignal(
+    !!searchParams.code && !profile()?.invited,
+  );
 
+  const inviteCode =
+    typeof searchParams.code === "string" && searchParams.code
+      ? searchParams.code
+      : "";
+
+  const handleError = (error: unknown, defaultMessage: string) => {
+    setCreationError(error instanceof Error ? error.message : defaultMessage);
+  };
+
+  const createInvite = async () => {
     try {
       setCreationError("");
       await apiFetcher("/api/invites", {
         method: "POST",
-        body: JSON.stringify({ target: targetNickname().trim() }),
+        body: JSON.stringify({ name: targetNickname().trim() }),
       });
       setTargetNickname("");
       refetchInvites();
     } catch (error) {
-      if (error instanceof Error) {
-        setCreationError(error.message);
-      } else {
-        setCreationError("Ошибка создания инвайта");
-      }
+      handleError(error, "Ошибка создания инвайта");
     }
   };
 
   const copyInviteLink = (code: string) => {
-    const link = `${window.location.origin}/signup?code=${encodeURIComponent(code)}`;
+    const link = `${window.location.origin}/invite/${encodeURIComponent(code)}`;
     navigator.clipboard.writeText(link);
     setCopied(code);
     setTimeout(() => setCopied(null), 2000);
@@ -109,8 +137,21 @@ export function Index() {
     navigate("/signin");
   };
 
+  const acceptInvite = async () => {
+    try {
+      await apiFetcher(`/api/invites/${inviteCode}`, {
+        method: "POST",
+      });
+      setIsModalOpen(false);
+      refetchProfile();
+      navigate("/");
+    } catch (error) {
+      handleError(error, "Ошибка принятия приглашения");
+    }
+  };
+
   onCleanup(() => {
-    if (profile.error?.message.includes("Авторизуйтесь")) {
+    if (profile.error?.message?.includes("Авторизуйтесь")) {
       handleLogout();
     }
   });
@@ -136,26 +177,28 @@ export function Index() {
             <HStack class="w-full items-center gap-4 py-4">
               <img
                 src="src/assets/images/steve-head.png"
-                alt="Аватар"
+                alt="skin"
                 class="size-24"
               />
               <VStack class="gap-3">
                 <p class="max-w-[200px] truncate text-2xl">
-                  {profile().nickname}
+                  {profile()?.nickname}
                 </p>
                 <VStack class="gap-1">
                   <p class="text-dark/50 text-sm">
-                    Доступ:{" "}
+                    Создан:{" "}
                     <span class="text-success">
                       {formatter.format(new Date(profile().createdAt))}
                     </span>
                   </p>
-                  <p class="text-dark/50 text-sm">
-                    Регистрация:{" "}
-                    <span class="text-dark">
-                      {formatter.format(new Date(profile().createdAt))}
-                    </span>
-                  </p>
+                  {profile().invited && (
+                    <p class="text-dark/50 text-sm">
+                      Приглашен:{" "}
+                      <span class="text-success">
+                        {formatter.format(new Date(profile().invited))}
+                      </span>
+                    </p>
+                  )}
                 </VStack>
               </VStack>
             </HStack>
@@ -170,21 +213,23 @@ export function Index() {
         title={`Приглашения ${invites()?.length || 0}/${profile()?.maxInvites || 0}`}
       >
         <VStack class="gap-4">
-          <HStack class="gap-1">
-            <Input
-              class="w-full"
-              placeholder="Для кого"
-              value={targetNickname()}
-              onInput={(e) => setTargetNickname(e.currentTarget.value)}
-            />
-            <Button
-              variant="solid"
-              onClick={createInvite}
-              disabled={profile.loading}
-            >
-              Создать
-            </Button>
-          </HStack>
+          <Show when={invites()?.length < profile()?.maxInvites}>
+            <HStack class="gap-1">
+              <Input
+                class="w-full"
+                placeholder="Для кого"
+                value={targetNickname()}
+                onInput={(e) => setTargetNickname(e.currentTarget.value)}
+              />
+              <Button
+                variant="solid"
+                onClick={createInvite}
+                disabled={profile.loading}
+              >
+                Создать
+              </Button>
+            </HStack>
+          </Show>
 
           <Show
             when={!invites.loading && !invites.error}
@@ -209,14 +254,16 @@ export function Index() {
                   <HStack class="border-dark/40 justify-between border-l-2 py-2 pl-4">
                     <VStack class="w-3/5 gap-1">
                       <p class="w-full truncate">
-                        {invite.used_by || "Не использовано"}
+                        {invite.name ? invite.name : "Приглашение"}
                       </p>
                       <p
                         class={`text-xs ${
                           invite.used_by ? "text-success" : "text-warn"
                         }`}
                       >
-                        {invite.used_by ? "Принято" : "Ожидает принятия"}
+                        {invite.used_by
+                          ? `Принято ${invite.used_by}`
+                          : "Ожидает принятия"}
                       </p>
                     </VStack>
                     <VStack class="w-max gap-1">
@@ -239,6 +286,23 @@ export function Index() {
           </Show>
         </VStack>
       </Block>
+      <Modal
+        isOpen={isModalOpen()}
+        onClose={() => {
+          setIsModalOpen(false);
+          navigate("/");
+        }}
+        title="Принять приглашение?"
+        onConfirm={acceptInvite}
+        confirmText="Принять"
+      >
+        <p class="text-dark/80">
+          Вы хотите использовать код приглашения <b>{inviteCode}</b>?
+        </p>
+        <Show when={creationError()}>
+          <p class="text-red-500">{creationError()}</p>
+        </Show>
+      </Modal>
     </VStack>
   );
 }

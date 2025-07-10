@@ -1,17 +1,38 @@
-import { createSignal, createResource, JSX } from "solid-js";
-import { A, useNavigate } from "@solidjs/router";
+import { createSignal, createResource, JSX, createEffect } from "solid-js";
+import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
+import { handleApiError, signin, signup } from "src/helpers/auth";
 
 export function Signup(): JSX.Element {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [nickname, setNickname] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
   const [passwordRepeat, setPasswordRepeat] = createSignal<string>("");
-  const [inviteCode, setInviteCode] = createSignal<string>("");
+  const [inviteCode, setInviteCode] = createSignal<string>(
+    (Array.isArray(searchParams.code)
+      ? searchParams.code[0]
+      : searchParams.code) || "",
+  );
 
   const [error, setError] = createSignal<string>("");
   const [loading, setLoading] = createSignal<boolean>(false);
+
+  createEffect(() => {
+    const newParams = { ...searchParams };
+
+    console.log(inviteCode());
+
+    if (inviteCode()) {
+      newParams.code = inviteCode() ?? undefined;
+    } else {
+      delete newParams.code;
+    }
+
+    setSearchParams(newParams, { replace: true });
+  });
 
   const navigate = useNavigate();
 
@@ -20,39 +41,29 @@ export function Signup(): JSX.Element {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nickname: nickname(),
-          password: password(),
-          password_repeat: passwordRepeat(),
-          invite_code: inviteCode(),
-        }),
-      });
+      const signupResponse = await signup(
+        nickname(),
+        password(),
+        passwordRepeat(),
+      );
+      await handleApiError(signupResponse);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let message;
+      const signinResponse = await signin(nickname(), password());
+      await handleApiError(signinResponse);
+      const data = await signinResponse.json();
 
-        try {
-          const { error: serverError } = JSON.parse(errorText);
-          message = serverError || response.statusText;
-        } catch {
-          message = errorText || `HTTP error ${response.status}`;
-        }
-        if (response.status === 401) {
-          throw new Error("Авторизуйтесь еще раз!");
-        }
-
-        throw new Error(message);
+      if (data.accessToken) {
+        localStorage.setItem("access_token", data.accessToken);
       }
 
-      navigate("/signin");
+      if (inviteCode()) {
+        navigate(`/?code=${inviteCode()}`);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
+      const message =
+        err instanceof Error ? err.message : "Что-то пошло не так";
       setError(message);
     } finally {
       setLoading(false);
@@ -101,7 +112,7 @@ export function Signup(): JSX.Element {
             Уже есть аккаунт? <br />
             <A
               class="text-blue-800 underline transition-colors hover:text-blue-700"
-              href="/signin"
+              href={inviteCode() ? `/signin?code=${inviteCode()}` : "/signin"}
             >
               Войти
             </A>
