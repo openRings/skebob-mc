@@ -1,0 +1,2 @@
+# inflation rate, the higher the number the lower it is, it is calculated by (amount_of_times_traded / infaltion_rate + normal price)
+inflation_rate: 256

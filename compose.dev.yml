@@ -30,18 +30,23 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 7777:7777
+      - target: 7777
+        published: 7777
+        protocol: tcp
+      - target: 7777
+        published: 7777
+        protocol: udp
     environment:
       EULA: TRUE
       TYPE: PAPER
       VERSION: 1.21.1
-      MEMORY: 4G
+      MEMORY: 6G
       MOTD: Памидоры памидоры помидоры
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
       SNOOPER_ENABLED: false
       SPAWN_PROTECTION: 0
-      VIEW_DISTANCE: 64
+      VIEW_DISTANCE: 24
       MODE: survival
       ONLINE_MODE: false
       SERVER_PORT: 7777
