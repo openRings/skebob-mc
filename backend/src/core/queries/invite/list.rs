@@ -17,7 +17,7 @@ impl Operation for InviteListQuery {
 impl InviteListQuery {
     pub async fn execute(&self, user_id: u64) -> anyhow::Result<Vec<InviteWithUsage>> {
         sqlx::query_as(
-            "SELECT i.code, i.created_at, u.nickname AS used_by FROM invites i
+            "SELECT i.name, i.code, i.created_at, u.nickname AS used_by FROM invites i
             LEFT JOIN invite_uses iu ON iu.invite_id = i.id
             LEFT JOIN users u ON u.id = iu.used_by
             WHERE i.created_by = ?",

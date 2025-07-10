@@ -14,8 +14,14 @@ impl Operation for InviteCreateCommand {
 }
 
 impl InviteCreateCommand {
-    pub async fn execute(&self, creator_id: u64, code: &str) -> anyhow::Result<()> {
-        sqlx::query("INSERT INTO invites(created_by, code) VALUES (?, ?)")
+    pub async fn execute(
+        &self,
+        name: Option<&str>,
+        creator_id: u64,
+        code: &str,
+    ) -> anyhow::Result<()> {
+        sqlx::query("INSERT INTO invites(name, created_by, code) VALUES (?, ?, ?)")
+            .bind(name)
             .bind(creator_id)
             .bind(code)
             .execute(self.database.pool())
