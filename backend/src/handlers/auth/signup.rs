@@ -4,8 +4,10 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use bcrypt::Version;
+use uuid::Uuid;
 
-use crate::commands::UserCreateCommand;
+use crate::commands::{UserCreateCommand, UserPluginCreateCommand};
+use crate::core::Op;
 use crate::database::Database;
 use crate::handlers::error::EndpointError;
 use crate::queries::UserByNickname;
@@ -19,6 +21,7 @@ pub struct SignupBody {
 
 pub async fn signup(
     State(database): State<Database>,
+    Op(user_plugin_create): Op<UserPluginCreateCommand>,
     Json(body): Json<SignupBody>,
 ) -> Result<impl IntoResponse, EndpointError> {
     let SignupBody {
@@ -42,9 +45,25 @@ pub async fn signup(
         )));
     }
 
-    let password_hash = bcrypt::hash_with_result(password, 10)
+    // TODO: maybe move that logic from handler
+    let password_hash = bcrypt::hash_with_result(password, 12)
         .context("failed to hash password")?
         .format_for_version(Version::TwoA);
+
+    let uuid = Uuid::new_v4();
+
+    let password_hash_rest = password_hash
+        .split('$')
+        .nth(3)
+        .with_context(|| format!("failed to get password hash rest: {password_hash}"))?;
+
+    let hash_salt = &password_hash_rest[..22];
+    let hashed_password = format!("12${}", &password_hash_rest[22..]);
+
+    user_plugin_create
+        .execute(uuid, &nickname, &hashed_password, hash_salt)
+        .await
+        .with_context(|| format!("failed to create user in plugin: {nickname}"))?;
 
     UserCreateCommand::execute(&nickname, &password_hash, database.pool())
         .await
