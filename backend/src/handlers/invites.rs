@@ -5,7 +5,7 @@ use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router};
 use base64::Engine;
-use base64::engine::general_purpose::STANDARD_NO_PAD;
+use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 
 use crate::commands::{InviteCreateCommand, InviteUseCommand};
 use crate::core::Op;
@@ -63,7 +63,7 @@ async fn create_invite(
     }
 
     let code_bytes = rand::random::<[u8; CODE_BYTES_LEN]>();
-    let code = STANDARD_NO_PAD.encode(code_bytes);
+    let code = URL_SAFE_NO_PAD.encode(code_bytes);
 
     invite_create
         .execute(user.id(), &code)
