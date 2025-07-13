@@ -7,6 +7,13 @@ interface ProfileResponse {
   invited: string | null;
 }
 
+interface InviteResponse {
+  name: string;
+  code: string;
+  created_at: Date;
+  used_by: string | null;
+}
+
 export const fetchProfile = async () => {
   try {
     const response = await request<ProfileResponse>("/api/profile");
@@ -15,13 +22,6 @@ export const fetchProfile = async () => {
     throw new Error("Не удалось загрузить профиль");
   }
 };
-
-interface InviteResponse {
-  name: string;
-  code: string;
-  created_at: Date;
-  used_by: string | null;
-}
 
 export const fetchInvites = async () => {
   try {
@@ -51,6 +51,6 @@ export const acceptInvite = async (inviteCode: string) => {
     });
     return response;
   } catch (err) {
-    throw new Error("Не удалось принять приглашение");
+    throw new Error(`Не удалось принять приглашение ${err}`);
   }
 };

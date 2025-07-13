@@ -8,11 +8,18 @@ export async function request<T>(
       ...options,
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         ...options.headers,
       },
     });
     if (!response.ok) {
       let errorMessage: string = "Что-то пошло не так :(";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (jsonError) {
+        errorMessage = response.statusText || errorMessage;
+      }
       if (response.status === 401) {
         try {
           const newToken = await renewToken();
@@ -30,6 +37,11 @@ export async function request<T>(
       }
       throw new Error(`Ошибка ${response.status}: ${errorMessage}`);
     }
+    const contentType = response.headers.get("Content-Type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return {} as T;
+    }
+
     return (await response.json()) as T;
   } catch (err) {
     throw err;
