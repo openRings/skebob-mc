@@ -1,0 +1,56 @@
+import { request } from "./api";
+
+interface ProfileResponse {
+  nickname: string;
+  maxInvites: number;
+  createdAt: Date;
+  invited: string | null;
+}
+
+export const fetchProfile = async () => {
+  try {
+    const response = await request<ProfileResponse>("/api/profile");
+    return response;
+  } catch (err) {
+    throw new Error("Не удалось загрузить профиль");
+  }
+};
+
+interface InviteResponse {
+  name: string;
+  code: string;
+  created_at: Date;
+  used_by: string | null;
+}
+
+export const fetchInvites = async () => {
+  try {
+    const response = await request<InviteResponse[]>("/api/invites");
+    return response;
+  } catch (err) {
+    throw new Error("Не удалось загрузить приглашения");
+  }
+};
+
+export const createInvite = async (name: string) => {
+  try {
+    const response = await request("/api/invites", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+    return response;
+  } catch (err) {
+    throw new Error("Не удалось загрузить приглашения");
+  }
+};
+
+export const acceptInvite = async (inviteCode: string) => {
+  try {
+    const response = await request(`/api/invites/${inviteCode}`, {
+      method: "POST",
+    });
+    return response;
+  } catch (err) {
+    throw new Error("Не удалось принять приглашение");
+  }
+};

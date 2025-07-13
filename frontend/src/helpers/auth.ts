@@ -1,11 +1,11 @@
-import { handleApiError } from "./api";
+import { request } from "./api";
 
 export const signup = async (
   nickname: string,
   password: string,
   repeatPassword: string,
 ) => {
-  const response = await fetch("/api/signup", {
+  await request("/api/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -16,16 +16,23 @@ export const signup = async (
       password_repeat: repeatPassword,
     }),
   });
-  await handleApiError(response);
-  return response;
 };
 
+export interface SigninResponse {
+  accessToken: string;
+}
+
 export const signin = async (nickname: string, password: string) => {
-  const response = await fetch("/api/signin", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nickname, password }),
-  });
-  await handleApiError(response);
-  return response;
+  try {
+    const { accessToken } = await request<SigninResponse>("/api/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nickname, password }),
+    });
+    if (accessToken) {
+      localStorage.setItem("access_token", accessToken);
+    }
+  } catch (err) {
+    throw new Error("Ошибка при входе");
+  }
 };

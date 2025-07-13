@@ -4,7 +4,6 @@ import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
 import { signin, signup } from "src/helpers/auth";
-import { handleApiError } from "src/helpers/api";
 
 export function Signup(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,20 +41,8 @@ export function Signup(): JSX.Element {
     setLoading(true);
 
     try {
-      const signupResponse = await signup(
-        nickname(),
-        password(),
-        passwordRepeat(),
-      );
-      await handleApiError(signupResponse);
-
-      const signinResponse = await signin(nickname(), password());
-      await handleApiError(signinResponse);
-      const data = await signinResponse.json();
-
-      if (data.accessToken) {
-        localStorage.setItem("access_token", data.accessToken);
-      }
+      await signup(nickname(), password(), passwordRepeat());
+      await signin(nickname(), password());
 
       if (inviteCode()) {
         navigate(`/?code=${inviteCode()}`);
@@ -63,9 +50,7 @@ export function Signup(): JSX.Element {
         navigate("/");
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Что-то пошло не так";
-      setError(message);
+      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
     } finally {
       setLoading(false);
     }

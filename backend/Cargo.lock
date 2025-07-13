@@ -947,27 +947,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
-name = "minecraft"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "axum",
- "axum-cookie",
- "base64",
- "bcrypt",
- "chrono",
- "hex",
- "rand 0.9.1",
- "serde",
- "serde_json",
- "sha2",
- "sqlx",
- "tokio",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "miniz_oxide"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1401,6 +1380,27 @@ checksum = "77549399552de45a898a580c1b41d445bf730df867cc44e6c0233bbc4b8329de"
 dependencies = [
  "digest",
  "rand_core 0.6.4",
+]
+
+[[package]]
+name = "skebob-mc"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "axum",
+ "axum-cookie",
+ "base64",
+ "bcrypt",
+ "chrono",
+ "hex",
+ "rand 0.9.1",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]

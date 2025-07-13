@@ -3,6 +3,7 @@ import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
 import { A, useNavigate, useSearchParams } from "@solidjs/router";
+import { signin } from "src/helpers/auth";
 
 export function Signin(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,33 +26,7 @@ export function Signin(): JSX.Element {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nickname: nickname(), password: password() }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        let message;
-
-        try {
-          const { error: serverError } = JSON.parse(errorText);
-          message = serverError || response.statusText;
-        } catch {
-          message = errorText || `HTTP error ${response.status}`;
-        }
-        if (response.status === 401) {
-          throw new Error("Авторизуйтесь еще раз!");
-        }
-
-        throw new Error(message);
-      }
-
-      const { accessToken } = await response.json();
-      if (accessToken) {
-        localStorage.setItem("access_token", accessToken);
-      }
+      await signin(nickname(), password());
       if (inviteCode()) {
         navigate(`/?code=${inviteCode()}`);
       } else {

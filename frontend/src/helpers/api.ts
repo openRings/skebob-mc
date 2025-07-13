@@ -1,105 +1,61 @@
-export const handleApiError = async (
-  response: Response,
-  retryCallback?: () => Promise<Response>,
-): Promise<void> => {
-  if (!response.ok) {
-    const errorText = await response.text();
-    let message: string;
+export async function request<T>(
+  url: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  try {
+    const response = await fetch(`${BASE_URL}${url}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+    if (!response.ok) {
+      let errorMessage: string = "Что-то пошло не так :(";
+      if (response.status === 401) {
+        try {
+          const newToken = await renewToken();
 
-    try {
-      const { error: serverError } = JSON.parse(errorText);
-      message = serverError || response.statusText;
-    } catch {
-      message = errorText || "Неизвестная ошибка";
-    }
-
-    if (response.status === 401) {
-      if (retryCallback) {
-        const tokenRenewed = await renewAccessToken();
-        if (tokenRenewed) {
-          const retryResponse = await retryCallback();
-          if (retryResponse.ok) {
-            return;
-          }
-          const retryErrorText = await retryResponse.text();
-          try {
-            const { error: retryError } = JSON.parse(retryErrorText);
-            message = retryError || retryResponse.statusText;
-          } catch {
-            message =
-              retryErrorText || "Неизвестная ошибка после обновления токена";
-          }
+          return await request<T>(url, {
+            ...options,
+            headers: {
+              ...options.headers,
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+        } catch (err) {
+          throw err;
         }
       }
-      throw new Error("UNAUTHORIZED");
+      throw new Error(`Ошибка ${response.status}: ${errorMessage}`);
     }
-    throw new Error(message);
+    return (await response.json()) as T;
+  } catch (err) {
+    throw err;
   }
-};
+}
 
-export const apiFetcher = async (
-  endpoint: string,
-  options: RequestInit = {},
-  retryCount = 0,
-  maxRetries = 3,
-): Promise<any> => {
-  const accessToken = localStorage.getItem("access_token");
-  if (!accessToken) throw new Error("Отсутствует токен авторизации");
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000);
-
+async function renewToken(): Promise<string> {
+  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   try {
-    const response = await fetch(endpoint, {
-      ...options,
-      signal: controller.signal,
+    const response = await fetch(`${BASE_URL}/api/renewal`, {
+      method: "POST",
       headers: {
-        ...options.headers,
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("access_token") || ""}`,
       },
     });
 
-    clearTimeout(timeoutId);
-
-    if (response.status === 401 && retryCount < maxRetries) {
-      console.log("piska piska");
-      const tokenRenewed = await renewAccessToken();
-      if (tokenRenewed) {
-        return await apiFetcher(endpoint, options, retryCount + 1, maxRetries);
-      }
-      throw new Error("Авторизуйтесь еще раз!");
+    if (!response.ok) {
+      throw new Error("Не удалось обновить токен");
     }
 
-    await handleApiError(response);
-    const contentType = response.headers.get("Content-Type");
-    return contentType?.includes("application/json") ? response.json() : null;
-  } catch (error) {
-    throw error instanceof Error ? error : new Error("Неизвестная ошибка");
-  } finally {
-    clearTimeout(timeoutId);
+    const data = await response.json();
+    const newToken = data.accessToken;
+    localStorage.setItem("access_token", newToken);
+    return newToken;
+  } catch (err) {
+    throw err;
   }
-};
-
-const renewAccessToken = async (): Promise<boolean> => {
-  try {
-    const response = await fetch("/api/renewal", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.accessToken) {
-        localStorage.setItem("access_token", data.accessToken);
-        console.log(data.accessToken);
-        return true;
-      }
-      return false;
-    }
-    return false;
-  } catch {
-    return false;
-  }
-};
+}
