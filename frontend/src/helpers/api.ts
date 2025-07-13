@@ -20,7 +20,11 @@ export async function request<T>(
       } catch (jsonError) {
         errorMessage = response.statusText || errorMessage;
       }
-      if (response.status === 401) {
+      if (
+        response.status === 401 &&
+        url !== "/api/signin" &&
+        url !== "/api/signup"
+      ) {
         try {
           const newToken = await renewToken();
 

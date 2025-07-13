@@ -2,6 +2,7 @@ import { Button } from "@components/uikit/Button";
 import { Block } from "@components/uikit/Block";
 import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
+import { Notification } from "@components/Notification";
 import { Input } from "@components/uikit/Input";
 import { createResource, createSignal, onCleanup, Show } from "solid-js";
 import { Modal } from "@components/Modal";
@@ -67,7 +68,6 @@ export function Index() {
   return (
     <VStack class="items-center gap-12">
       <h1 class="text-dark/50 mt-16 w-full text-center text-4xl">SkebobMC</h1>
-
       <Block title="Профиль">
         <Show
           when={!profile.loading && !profile.error}

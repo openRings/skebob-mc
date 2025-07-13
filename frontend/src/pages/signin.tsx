@@ -4,6 +4,7 @@ import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
 import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import { signin } from "src/helpers/auth";
+import { addNotification } from "@components/NotificationContainer";
 
 export function Signin(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,7 +34,10 @@ export function Signin(): JSX.Element {
         navigate("/");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+      addNotification(
+        err instanceof Error ? err.message : "Неизвестная ошибка",
+        "error",
+      );
     } finally {
       setLoading(false);
     }

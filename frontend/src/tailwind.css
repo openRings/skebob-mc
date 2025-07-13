@@ -5,6 +5,7 @@
 
   --color-neutral: #e8e4e3;
   --color-dark: #363636;
+  --color-error: #ef4444;
   --color-success: #62b158;
-  --color-warn: #a9a539;
+  --color-warn: #eab308;
 }
