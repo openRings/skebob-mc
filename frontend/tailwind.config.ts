@@ -8,6 +8,9 @@ const config: Config = {
   darkMode: "class",
   theme: {
     extend: {},
+    fontFamily: {
+      header: "'Press Start 2P', system-ui",
+    },
   },
   plugins: [],
 };

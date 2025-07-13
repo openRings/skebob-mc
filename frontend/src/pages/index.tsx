@@ -1,10 +1,13 @@
-import { A } from "@solidjs/router";
+import { Title } from "@components/Title";
+import { UserDashboard } from "@components/UserDashboard";
 
 export function Index() {
   return (
-    <section class="mt-64 flex flex-col gap-4">
-      <h1 class="text-3xl">This is index page</h1>
-      <A href="/counter">go to counter.tsx page</A>
-    </section>
+    <div class="">
+      <Title />
+      <section class="mx-auto h-[500px] w-[1200px] rounded-b-xl bg-zinc-800 drop-shadow-2xl">
+        <UserDashboard />
+      </section>
+    </div>
   );
 }
