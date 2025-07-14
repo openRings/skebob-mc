@@ -20,9 +20,9 @@ export function Modal(props: ModalProps): JSX.Element {
           <VStack class="gap-6">
             <h2 class="text-dark text-2xl">{props.title}</h2>
             {props.children}
-            <div class="flex justify-end gap-4">
+            <div class="flex justify-between gap-4">
               <Button variant="solid" onClick={props.onClose}>
-                {props.cancelText || "Отмена"}
+                {props.cancelText || "Отменить"}
               </Button>
               <Show when={props.onConfirm}>
                 <Button variant="solid" onClick={props.onConfirm}>
