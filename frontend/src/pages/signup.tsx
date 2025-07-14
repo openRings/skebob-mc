@@ -1,8 +1,8 @@
-import { createSignal, JSX, createEffect } from "solid-js";
+import { createSignal, JSX, createEffect, Show } from "solid-js";
 import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
-import { VStack } from "@components/uikit/Stack";
+import { HStack, VStack } from "@components/uikit/Stack";
 import { signin, signup } from "src/helpers/auth";
 import { error } from "@components/NotificationContainer";
 
@@ -12,18 +12,36 @@ export function Signup(): JSX.Element {
   const [nickname, setNickname] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
   const [passwordRepeat, setPasswordRepeat] = createSignal<string>("");
-  const [inviteCode, setInviteCode] = createSignal<string>(
-    (Array.isArray(searchParams.code)
-      ? searchParams.code[0]
-      : searchParams.code) || "",
-  );
+  const [inviteCode, setInviteCode] = createSignal<string>("");
+  const [hasInitialCode, setHasInitialCode] = createSignal<boolean>(false);
+  const [hasReferralCode, setHasReferralCode] = createSignal<boolean>(false);
 
   const [passwordInputError, setPasswordInputError] = createSignal<string>("");
   const [repeatPasswordInputError, setRepeatPasswordInputError] =
     createSignal<string>("");
-  const [nicknameInputError, setNicknameInputError] = createSignal<string>("");
 
   const [loading, setLoading] = createSignal<boolean>(false);
+
+  const code = Array.isArray(searchParams.code)
+    ? searchParams.code[0]
+    : searchParams.code;
+  if (code) {
+    setInviteCode(code);
+    setHasReferralCode(true);
+    setHasInitialCode(true);
+  }
+
+  const codeFromUrl = () => {
+    const code = searchParams.code;
+    return Array.isArray(code) ? code[0] : code;
+  };
+  const hasCodeInUrl = () => !!codeFromUrl();
+
+  createEffect(() => {
+    if (hasCodeInUrl()) {
+      setInviteCode(codeFromUrl() || "");
+    }
+  });
 
   createEffect(() => {
     const newParams = { ...searchParams };
@@ -106,7 +124,6 @@ export function Signup(): JSX.Element {
         <VStack class="w-full gap-6">
           <VStack class="gap-2">
             <Input
-              error={nicknameInputError()}
               placeholder="Никнейм"
               value={nickname()}
               onInput={(e) => setNickname(e.currentTarget.value)}
@@ -118,7 +135,6 @@ export function Signup(): JSX.Element {
               value={password()}
               onInput={(e) => setPassword(e.currentTarget.value)}
             />
-
             <Input
               error={repeatPasswordInputError()}
               placeholder="Повторите пароль"
@@ -126,11 +142,26 @@ export function Signup(): JSX.Element {
               value={passwordRepeat()}
               onInput={(e) => setPasswordRepeat(e.currentTarget.value)}
             />
-            <Input
-              placeholder="Код приглашения (необязательно)"
-              value={inviteCode()}
-              disabled={inviteCode().length > 0}
-            />
+            <Show when={hasReferralCode()}>
+              <Input
+                placeholder="Код приглашения"
+                value={inviteCode()}
+                disabled={hasInitialCode()}
+                onInput={(e) => setInviteCode(e.currentTarget.value)}
+              />
+            </Show>
+            <HStack class="mx-auto gap-2">
+              <input
+                type="checkbox"
+                checked={hasReferralCode()}
+                onChange={(e) => setHasReferralCode(e.currentTarget.checked)}
+                disabled={hasInitialCode()}
+                class="material-symbols-outlined bg-dark/10 checked:bg-dark/80 disabled:bg-dark/40 hover:bg-dark/60 size-5 appearance-none rounded-md transition-colors duration-200 checked:before:block checked:before:text-center checked:before:text-base checked:before:leading-5 checked:before:text-white checked:before:content-['check'] disabled:cursor-not-allowed disabled:opacity-50"
+              />
+              <p class="text-dark/70 flex items-center gap-2 text-sm">
+                У меня есть реферальный код
+              </p>
+            </HStack>
           </VStack>
           <Button
             onClick={handleSignUp}
@@ -146,10 +177,11 @@ export function Signup(): JSX.Element {
           >
             {loading() ? "Загрузка..." : "Создать"}
           </Button>
-          <p class="text-center text-xs">
+
+          <p class="text-dark/70 text-center text-sm">
             Уже есть аккаунт? <br />
             <A
-              class="text-blue-800 underline transition-colors hover:text-blue-700"
+              class="hover:text-dark/70 text-dark/60 text-xs underline transition-colors"
               href={inviteCode() ? `/signin?code=${inviteCode()}` : "/signin"}
             >
               Войти

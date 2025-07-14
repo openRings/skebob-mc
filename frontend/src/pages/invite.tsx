@@ -1,18 +1,27 @@
 import { useNavigate, useParams } from "@solidjs/router";
-import { createEffect } from "solid-js";
+import { createEffect, JSX } from "solid-js";
+import { fetchProfile } from "src/helpers/profile";
 
-export function Invite() {
+export function Invite(): JSX.Element {
   const navigate = useNavigate();
   const params = useParams();
 
   createEffect(() => {
     const accessToken = localStorage.getItem("access_token");
     if (accessToken) {
-      navigate(`/?code=${params.code}`);
+      (async () => {
+        try {
+          await fetchProfile();
+          navigate(`/?code=${params.code}`);
+        } catch (err) {
+          localStorage.removeItem("access_token");
+          navigate(`/signin?code=${params.code}`);
+        }
+      })();
     } else {
-      navigate(`/signin/?code=${params.code}`);
+      navigate(`/signin?code=${params.code}`);
     }
-  }, [navigate, params.code]);
+  });
 
   return null;
 }

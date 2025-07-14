@@ -64,10 +64,10 @@ export function Signin(): JSX.Element {
           >
             {loading() ? "Загрузка..." : "Войти"}
           </Button>
-          <p class="text-center text-xs">
+          <p class="text-dark/70 text-center text-sm">
             Еще нет аккаунта? <br />
             <A
-              class="text-blue-800 underline transition-colors hover:text-blue-700"
+              class="hover:text-dark/70 text-dark/60 text-xs underline transition-colors"
               href={inviteCode() ? `/signup?code=${inviteCode()}` : "/signup"}
             >
               Зарегистрироваться
