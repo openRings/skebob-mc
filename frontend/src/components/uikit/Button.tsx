@@ -5,11 +5,11 @@ type Props = JSX.IntrinsicElements["button"] & {
 };
 
 export function Button(props: Props) {
-  const [local, attrs] = splitProps(props, ["class", "variant"]);
+  const [local, attrs] = splitProps(props, ["class", "variant", "disabled"]);
 
   const buttonClasses = {
     solid:
-      "text-white/80 hover:text-white/70 bg-dark/80 px-4 py-3 text-center rounded-sm",
+      "text-white/80 hover:text-white/70 bg-dark/80 px-4 py-3 text-center rounded-sm disabled:bg-dark/60 disabled:cursor-default",
     transparent: "text-dark/70 hover:text-dark/50",
   };
 
@@ -17,6 +17,7 @@ export function Button(props: Props) {
   return (
     <button
       {...attrs}
+      disabled={!!local.disabled}
       class={[
         "cursor-pointer bg-none text-sm transition-colors",
         baseClass,

@@ -18,8 +18,11 @@ export const Notification: Component<NotificationProps> = (props) => {
       }`}
     >
       <div class="flex items-center justify-between">
-        <p>{props.message}</p>
-        <button onClick={props.onClose} class="ml-4 text-white">
+        <p class="select-none">{props.message}</p>
+        <button
+          onClick={props.onClose}
+          class="hover:bg-dark/20 ml-4 size-6 cursor-pointer rounded-lg text-white transition-colors"
+        >
           ✕
         </button>
       </div>

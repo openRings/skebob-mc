@@ -42,7 +42,7 @@ export function Signin(): JSX.Element {
     <div class="flex h-screen w-full items-center justify-center">
       <VStack class="w-max items-center gap-12">
         <h1 class="text-dark/50 w-full text-center text-4xl">Вход</h1>
-        <VStack class="w-xs gap-2">
+        <VStack class="w-xs gap-6">
           <VStack class="w-full gap-2">
             <Input
               placeholder="Никнейм"
@@ -60,7 +60,7 @@ export function Signin(): JSX.Element {
             onClick={handleSignIn}
             variant="solid"
             class="text-center"
-            disabled={loading()}
+            disabled={loading() || !password() || !nickname()}
           >
             {loading() ? "Загрузка..." : "Войти"}
           </Button>
