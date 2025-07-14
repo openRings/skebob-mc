@@ -11,6 +11,7 @@ import {
   createInvite,
   fetchInvites,
   fetchProfile,
+  getInviteCodeInfo,
 } from "src/helpers/profile";
 
 const formatter = new Intl.DateTimeFormat("ru-RU", {
@@ -52,12 +53,18 @@ export function Index() {
 
   const handleAcceptInvite = async () => {
     try {
+      const response = await getInviteCodeInfo(inviteCode);
+      if (response.used_by) {
+        throw Error("Это приглашение уже использовано");
+      }
       await acceptInvite(inviteCode);
       setIsModalOpen(false);
       refetchProfile();
       navigate("/");
     } catch (err) {
+      setIsModalOpen(false);
       error(err instanceof Error ? err.message : "Ошибка принятия приглашения");
+      navigate("/");
     }
   };
 

@@ -14,6 +14,11 @@ interface InviteResponse {
   used_by: string | null;
 }
 
+interface InviteCodeInfoResponse {
+  created_by: string;
+  used_by: string;
+}
+
 export const fetchProfile = async () => {
   try {
     const response = await request<ProfileResponse>("/api/profile");
@@ -51,6 +56,17 @@ export const acceptInvite = async (inviteCode: string) => {
     });
     return response;
   } catch (err) {
-    throw new Error(`Не удалось принять приглашение`);
+    throw new Error(`${err}`);
+  }
+};
+
+export const getInviteCodeInfo = async (
+  inviteCode: string,
+): Promise<InviteCodeInfoResponse> => {
+  try {
+    const response = await request(`/api/invites/${inviteCode}`);
+    return response as InviteCodeInfoResponse;
+  } catch (err) {
+    throw new Error(`Код недоступен`);
   }
 };

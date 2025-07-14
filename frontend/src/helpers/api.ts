@@ -2,9 +2,8 @@ export async function request<T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   try {
-    const response = await fetch(`${BASE_URL}${url}`, {
+    const response = await fetch(`${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
