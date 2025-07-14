@@ -1,15 +1,17 @@
 services:
   proxy:
     image: caddy:2.10-alpine
+    restart: unless-stopped
     ports:
       - 80:80
+      - 8080:8080
     volumes:
       - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
 
   backend:
     build:
       dockerfile: ./docker/Dockerfile.dev.backend
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./backend:/app
       - cargo-cache:/usr/local/cargo
@@ -22,11 +24,25 @@ services:
     volumes:
       - ./frontend:/app
 
+  grafana:
+    image: grafana/grafana:12.0.2
+    restart: unless-stopped
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+      - ./docker/grafana:/etc/grafana/provisioning
+
+  prometheus:
+    image: prom/prometheus:v3.4.2
+    restart: always
+    volumes:
+      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus
+
   minecraft:
     build:
       dockerfile: ../docker/Dockerfile.minecraft
       context: ./minecraft
-    restart: always
+    restart: unless-stopped
     stdin_open: true
     tty: true
     ports:
@@ -51,7 +67,7 @@ services:
 
   database:
     image: mariadb
-    restart: always
+    restart: unless-stopped
     ports:
       - 3306:3306
     environment:

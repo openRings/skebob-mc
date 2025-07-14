@@ -1,0 +1,23 @@
+plugin-settings:
+  # Enabling or disabling whitelist: true, false.
+  enable: true
+  # Storage type: yml, mysql
+  storage-type: mysql
+
+database: # If storage type is mysql
+  host: "database:3306"
+  name: "minecraft"
+  username: "root"
+  password: "root"
+
+messages:
+  kick-message: "&cПохоже вас еще не пригласили, посетите сайт play.magwoo.ru."
+  no-permissions: "&2NBWL &7> &cYou don't have permission."
+  player-add: "&2NBWL &7> &aPlayer added to the whitelist."
+  player-remove: "&2NBWL &7> &cPlayer removed from the whitelist."
+  player-already-exists: "&2NBWL &7> &cPlayer already on the whitelist."
+  player-not-found: "&2NBWL &7> &cPlayer not found on the whitelist."
+  plugin-reload: "&2NBWL &7>  &aPlugin config reloaded."
+  plugin-enable: "&2NBWL &7>  &aName Based Whitelist enabled."
+  plugin-disable: "&2NBWL &7> &cName Based Whitelist disabled."
+  plugin-usage: "&2NBWL &7> &fPlugin usage:\n &7/nbwl reload &f- Config Reload.\n &7/nbwl add|remove <username> &f- add|remove player in whitelist.\n &7/nbwl enable|disable &f- Enable|Disable Name Based Whitelist."

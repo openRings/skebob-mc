@@ -1,4 +1,8 @@
-http://localhost {
+:8080 {
+	reverse_proxy grafana:3000
+}
+
+http:// {
 	encode gzip zstd
 
 	handle_path /api/* {
