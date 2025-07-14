@@ -107,7 +107,7 @@ async fn use_invite(
 
     if profile.invited.is_some() {
         return Err(EndpointError::Forbidden(
-            "Вы уже приняли пришлашение".to_owned(),
+            "Вы уже приняли приглашение".to_owned(),
         ));
     }
 
