@@ -13,7 +13,9 @@ use crate::core::Op;
 use crate::database::Database;
 use crate::handlers::EndpointError;
 use crate::model::User;
-use crate::queries::{InviteAvaliableQuery, InviteListQuery, InviteRemainedQuery};
+use crate::queries::{
+    InviteAvaliableQuery, InviteListQuery, InviteRemainedQuery, UserProfileQuery,
+};
 
 const CODE_BYTES_LEN: usize = 8;
 
@@ -87,6 +89,7 @@ async fn create_invite(
 async fn use_invite(
     Path(code): Path<String>,
     user: User,
+    Op(user_profile): Op<UserProfileQuery>,
     Op(invite_avaliable): Op<InviteAvaliableQuery>,
     Op(invite_use): Op<InviteUseCommand>,
 ) -> Result<impl IntoResponse, EndpointError> {
@@ -95,6 +98,18 @@ async fn use_invite(
         .await
         .with_context(|| format!("failed to get invite by code: {code}"))?
         .ok_or(EndpointError::NotFound)?;
+
+    let profile = user_profile
+        .execute(user.id())
+        .await
+        .with_context(|| format!("failed to get profile of user: {}", user.nickname()))?
+        .with_context(|| format!("user must be exists, but does not: {}", user.nickname()))?;
+
+    if profile.invited.is_some() {
+        return Err(EndpointError::Forbidden(
+            "Вы уже приняли пришлашение".to_owned(),
+        ));
+    }
 
     invite_use
         .execute(invite.id(), user.id())

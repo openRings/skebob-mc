@@ -12,7 +12,7 @@ pub struct UserProfile {
     nickname: String,
     max_invites: u16,
     created_at: DateTime<Utc>,
-    invited: Option<DateTime<Utc>>,
+    pub invited: Option<DateTime<Utc>>,
 }
 
 pub struct UserProfileQuery {
