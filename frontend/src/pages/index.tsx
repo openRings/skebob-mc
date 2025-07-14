@@ -3,7 +3,7 @@ import { Block } from "@components/uikit/Block";
 import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
-import { error } from "@components/NotificationContainer";
+import { error, warn } from "@components/NotificationContainer";
 import { createResource, createSignal, Show } from "solid-js";
 import { Modal } from "@components/Modal";
 import {
@@ -70,6 +70,7 @@ export function Index() {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    warn("Вы вышли из аккаунта");
     navigate("/signin");
   };
 

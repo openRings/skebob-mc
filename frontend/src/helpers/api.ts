@@ -3,11 +3,13 @@ export async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   try {
+    const accessToken = localStorage.getItem("access_token");
+    if (!accessToken) throw "Не авторизован";
     const response = await fetch(`${url}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        Authorization: `Bearer ${accessToken}`,
         ...options.headers,
       },
     });
@@ -35,6 +37,7 @@ export async function request<T>(
             },
           });
         } catch (err) {
+          window.location.href = "/signin";
           throw err;
         }
       }
@@ -52,9 +55,8 @@ export async function request<T>(
 }
 
 async function renewToken(): Promise<string> {
-  const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   try {
-    const response = await fetch(`${BASE_URL}/api/renewal`, {
+    const response = await fetch(`/api/renewal`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
