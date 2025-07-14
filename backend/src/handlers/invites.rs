@@ -14,18 +14,18 @@ use crate::database::Database;
 use crate::handlers::EndpointError;
 use crate::model::User;
 use crate::queries::{
-    InviteAvaliableQuery, InviteListQuery, InviteRemainedQuery, UserProfileQuery,
+    InviteAvaliableQuery, InviteInfoQuery, InviteListQuery, InviteRemainedQuery, UserProfileQuery,
 };
 
 const CODE_BYTES_LEN: usize = 8;
 
 pub fn get_nest() -> Router<Database> {
     Router::new()
-        .route("/", post(create_invite).get(my_invites))
-        .route("/{code}", post(use_invite))
+        .route("/", post(create_invite).get(get_my_invites))
+        .route("/{code}", post(use_invite).get(get_invite_info))
 }
 
-async fn my_invites(
+async fn get_my_invites(
     Op(invite_list): Op<InviteListQuery>,
     user: User,
 ) -> Result<impl IntoResponse, EndpointError> {
@@ -122,4 +122,17 @@ async fn use_invite(
         })?;
 
     Ok(StatusCode::OK)
+}
+
+async fn get_invite_info(
+    Path(code): Path<String>,
+    Op(invite_info): Op<InviteInfoQuery>,
+) -> Result<impl IntoResponse, EndpointError> {
+    let invite_info = invite_info
+        .execute(&code)
+        .await
+        .with_context(|| format!("failed to get invite info by code: {code}"))?
+        .ok_or(EndpointError::NotFound)?;
+
+    Ok(Json(invite_info))
 }
