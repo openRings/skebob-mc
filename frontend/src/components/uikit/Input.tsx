@@ -8,7 +8,7 @@ export function Input(props: Props) {
     <input
       {...attrs}
       class={[
-        "bg-dark/10 rounded-sm px-4 py-2 focus:outline-0",
+        "bg-dark/10 disabled:text-dark/35 rounded-sm px-4 py-2 focus:outline-0",
         props.class,
       ].join(" ")}
     />

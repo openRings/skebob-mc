@@ -21,6 +21,18 @@ export function addNotification(
   }, 3000);
 }
 
+export function error(message: string) {
+  addNotification(message, "error");
+}
+
+export function success(message: string) {
+  addNotification(message, "success");
+}
+
+export function warn(message: string) {
+  addNotification(message, "warn");
+}
+
 export const NotificationContainer = () => {
   return (
     <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">

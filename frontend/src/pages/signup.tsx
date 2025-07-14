@@ -4,6 +4,7 @@ import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
 import { signin, signup } from "src/helpers/auth";
+import { error } from "@components/NotificationContainer";
 
 export function Signup(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,13 +18,10 @@ export function Signup(): JSX.Element {
       : searchParams.code) || "",
   );
 
-  const [error, setError] = createSignal<string>("");
   const [loading, setLoading] = createSignal<boolean>(false);
 
   createEffect(() => {
     const newParams = { ...searchParams };
-
-    console.log(inviteCode());
 
     if (inviteCode()) {
       newParams.code = inviteCode() ?? undefined;
@@ -37,7 +35,6 @@ export function Signup(): JSX.Element {
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    setError("");
     setLoading(true);
 
     try {
@@ -50,7 +47,7 @@ export function Signup(): JSX.Element {
         navigate("/");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
+      error(err instanceof Error ? err.message : (err as string));
     } finally {
       setLoading(false);
     }
@@ -61,7 +58,6 @@ export function Signup(): JSX.Element {
       <VStack class="w-xs items-center gap-12">
         <h1 class="text-dark/50 w-full text-center text-4xl">Регистрация</h1>
         <VStack class="w-full gap-6">
-          {error() && <p class="text-center text-red-500">{error()}</p>}
           <VStack class="gap-2">
             <Input
               placeholder="Никнейм"
@@ -77,6 +73,7 @@ export function Signup(): JSX.Element {
             <Input
               placeholder="Код приглашения"
               value={inviteCode()}
+              disabled={inviteCode().length > 0}
               onInput={(e) => setInviteCode(e.currentTarget.value)}
             />
             <Input

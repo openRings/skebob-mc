@@ -4,14 +4,13 @@ import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
 import { A, useNavigate, useSearchParams } from "@solidjs/router";
 import { signin } from "src/helpers/auth";
-import { addNotification } from "@components/NotificationContainer";
+import { error } from "@components/NotificationContainer";
 
 export function Signin(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [nickname, setNickname] = createSignal<string>("");
   const [password, setPassword] = createSignal<string>("");
-  const [error, setError] = createSignal<string>("");
   const [loading, setLoading] = createSignal<boolean>(false);
 
   const [inviteCode, setInviteCode] = createSignal<string>(
@@ -23,7 +22,6 @@ export function Signin(): JSX.Element {
   const navigate = useNavigate();
 
   const handleSignIn = async () => {
-    setError("");
     setLoading(true);
 
     try {
@@ -34,10 +32,7 @@ export function Signin(): JSX.Element {
         navigate("/");
       }
     } catch (err) {
-      addNotification(
-        err instanceof Error ? err.message : "Неизвестная ошибка",
-        "error",
-      );
+      error(err instanceof Error ? err.message : "Неизвестная ошибка");
     } finally {
       setLoading(false);
     }
@@ -48,7 +43,6 @@ export function Signin(): JSX.Element {
       <VStack class="w-max items-center gap-12">
         <h1 class="text-dark/50 w-full text-center text-4xl">Вход</h1>
         <VStack class="w-xs gap-2">
-          {error() && <p class="text-center text-red-500">{error()}</p>}
           <VStack class="w-full gap-2">
             <Input
               placeholder="Никнейм"

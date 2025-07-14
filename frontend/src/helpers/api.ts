@@ -39,7 +39,7 @@ export async function request<T>(
           throw err;
         }
       }
-      throw new Error(`Ошибка ${response.status}: ${errorMessage}`);
+      throw `${errorMessage}`;
     }
     const contentType = response.headers.get("Content-Type");
     if (!contentType || !contentType.includes("application/json")) {

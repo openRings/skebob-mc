@@ -2,9 +2,9 @@ import { Button } from "@components/uikit/Button";
 import { Block } from "@components/uikit/Block";
 import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { Notification } from "@components/Notification";
 import { Input } from "@components/uikit/Input";
-import { createResource, createSignal, onCleanup, Show } from "solid-js";
+import { error } from "@components/NotificationContainer";
+import { createResource, createSignal, Show } from "solid-js";
 import { Modal } from "@components/Modal";
 import {
   acceptInvite,
@@ -40,17 +40,25 @@ export function Index() {
   );
 
   const handleCreateInvite = async () => {
-    setCreationError("");
-    await createInvite(targetNickname());
-    setTargetNickname("");
-    refetchInvites();
+    try {
+      setCreationError("");
+      await createInvite(targetNickname());
+      setTargetNickname("");
+      refetchInvites();
+    } catch (err) {
+      error(err instanceof Error ? err.message : "Ошибка создания приглашения");
+    }
   };
 
   const handleAcceptInvite = async () => {
-    await acceptInvite(inviteCode);
-    setIsModalOpen(false);
-    refetchProfile();
-    navigate("/");
+    try {
+      await acceptInvite(inviteCode);
+      setIsModalOpen(false);
+      refetchProfile();
+      navigate("/");
+    } catch (err) {
+      error(err instanceof Error ? err.message : "Ошибка принятия приглашения");
+    }
   };
 
   const handleLogout = () => {

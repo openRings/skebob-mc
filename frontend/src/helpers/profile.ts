@@ -40,7 +40,7 @@ export const createInvite = async (name: string) => {
     });
     return response;
   } catch (err) {
-    throw new Error("Не удалось загрузить приглашения");
+    throw new Error(`${err}`);
   }
 };
 
@@ -51,6 +51,6 @@ export const acceptInvite = async (inviteCode: string) => {
     });
     return response;
   } catch (err) {
-    throw new Error(`Не удалось принять приглашение ${err}`);
+    throw new Error(`Не удалось принять приглашение`);
   }
 };
