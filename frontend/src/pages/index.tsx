@@ -13,6 +13,7 @@ import {
   fetchProfile,
   getInviteCodeInfo,
 } from "src/helpers/profile";
+import { copyToClipboard } from "src/utlis/clipboard";
 
 const formatter = new Intl.DateTimeFormat("ru-RU", {
   day: "numeric",
@@ -58,12 +59,12 @@ export function Index() {
         throw Error("Это приглашение уже использовано");
       }
       await acceptInvite(inviteCode);
+      success("Приглашение принято");
       refetchProfile();
     } catch (err) {
       error(err instanceof Error ? err.message : "Ошибка принятия приглашения");
     } finally {
       setIsModalOpen(false);
-      success("Приглашение принято");
       navigate("/");
     }
   };
@@ -76,7 +77,7 @@ export function Index() {
 
   const copyInviteLink = (code: string) => {
     const link = `${window.location.origin}/invite/${encodeURIComponent(code)}`;
-    navigator.clipboard.writeText(link);
+    copyToClipboard(link);
     setCopied(code);
     setTimeout(() => setCopied(null), 2000);
   };
@@ -97,8 +98,8 @@ export function Index() {
             )
           }
         >
-          <HStack class="justify-between">
-            <HStack class="w-full items-center gap-4 py-4">
+          <HStack class="justify-between py-4">
+            <HStack class="w-full items-center gap-4">
               <img
                 src="src/assets/images/steve-head.png"
                 alt="skin"
@@ -195,7 +196,7 @@ export function Index() {
                           }`}
                         >
                           {invite.used_by
-                            ? `Принято ${invite.used_by}`
+                            ? `Принято игроком: ${invite.used_by}`
                             : "Ожидает принятия"}
                         </p>
                       </VStack>

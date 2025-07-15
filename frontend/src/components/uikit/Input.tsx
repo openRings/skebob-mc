@@ -21,7 +21,7 @@ export function Input(props: Props) {
           <span class="material-symbols-outlined text-error absolute top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer">
             error
           </span>
-          <div class="bg-dark font-rubik pointer-events-none absolute bottom-full z-10 mb-4 -translate-x-1/2 rounded-md px-4 py-2 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:block group-hover:opacity-100">
+          <div class="bg-dark font-rubik pointer-events-none absolute bottom-full z-10 mb-4 w-32 -translate-x-1/2 rounded-md px-4 py-2 text-xs font-medium text-white opacity-0 transition-opacity duration-300 group-hover:block group-hover:opacity-100">
             {props.error}
           </div>
         </div>
