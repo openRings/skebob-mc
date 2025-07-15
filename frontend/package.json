@@ -7,11 +7,11 @@
     "preview": "npm run build && vite preview"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.17",
+    "@tailwindcss/postcss": "^4.1.11",
     "postcss": "^8.4.33",
     "prettier": "^3.4.1",
-    "prettier-plugin-tailwindcss": "^0.6.9",
-    "tailwindcss": "^3.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.13",
+    "tailwindcss": "^4.1.11",
     "typescript": "^5.3.3",
     "vite": "^5.0.11",
     "vite-plugin-solid": "^2.8.2",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@solidjs/router": "^0.15.1",
+    "@tailwindcss/vite": "^4.1.11",
     "solid-js": "^1.8.11"
   }
 }
