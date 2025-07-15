@@ -3,7 +3,7 @@ import { Block } from "@components/uikit/Block";
 import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
-import { error, warn } from "@components/NotificationContainer";
+import { error, success, warn } from "@components/NotificationContainer";
 import { createResource, createSignal, Show } from "solid-js";
 import { Modal } from "@components/Modal";
 import {
@@ -63,6 +63,7 @@ export function Index() {
       error(err instanceof Error ? err.message : "Ошибка принятия приглашения");
     } finally {
       setIsModalOpen(false);
+      success("Приглашение принято");
       navigate("/");
     }
   };
@@ -199,7 +200,7 @@ export function Index() {
                         </p>
                       </VStack>
                       <VStack class="w-max gap-1">
-                        <p class="text-dark/50 w-full text-nowrap text-right">
+                        <p class="text-dark/50 w-full text-right text-nowrap">
                           Код: <span class="text-dark">{invite.code}</span>
                         </p>
                         <Button

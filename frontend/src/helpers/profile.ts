@@ -24,7 +24,7 @@ export const fetchProfile = async () => {
     const response = await request<ProfileResponse>("/api/profile");
     return response;
   } catch (err) {
-    throw new Error("Не удалось загрузить профиль");
+    throw err;
   }
 };
 

@@ -4,7 +4,10 @@ export async function request<T>(
 ): Promise<T> {
   try {
     const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) throw "Не авторизован";
+    if (!accessToken && url !== "/api/signin" && url !== "/api/signup") {
+      window.location.href = "/signin";
+      throw "Не авторизован";
+    }
     const response = await fetch(`${url}`, {
       ...options,
       headers: {

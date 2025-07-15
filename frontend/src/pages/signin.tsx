@@ -32,6 +32,7 @@ export function Signin(): JSX.Element {
         navigate("/");
       }
     } catch (err) {
+      console.log(err);
       error(err instanceof Error ? err.message : "Неизвестная ошибка");
     } finally {
       setLoading(false);

@@ -33,6 +33,6 @@ export const signin = async (nickname: string, password: string) => {
       localStorage.setItem("access_token", accessToken);
     }
   } catch (err) {
-    throw new Error("Ошибка при входе");
+    throw err;
   }
 };
