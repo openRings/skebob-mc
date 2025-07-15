@@ -1,23 +1,9 @@
+import {
+  InviteCodeInfoResponse,
+  InviteResponse,
+  ProfileResponse,
+} from "src/types/auth";
 import { request } from "./api";
-
-interface ProfileResponse {
-  nickname: string;
-  maxInvites: number;
-  createdAt: Date;
-  invited: string | null;
-}
-
-interface InviteResponse {
-  name: string;
-  code: string;
-  created_at: Date;
-  used_by: string | null;
-}
-
-interface InviteCodeInfoResponse {
-  created_by: string;
-  used_by: string;
-}
 
 export const fetchProfile = async () => {
   try {

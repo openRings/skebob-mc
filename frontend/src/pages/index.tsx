@@ -4,13 +4,7 @@ import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
 import { error, success, warn } from "@components/NotificationContainer";
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  onMount,
-  Show,
-} from "solid-js";
+import { createEffect, createResource, createSignal, Show } from "solid-js";
 import { Modal } from "@components/Modal";
 import {
   acceptInvite,
@@ -33,7 +27,6 @@ export function Index() {
 
   const [targetNickname, setTargetNickname] = createSignal("");
   const [copied, setCopied] = createSignal<string | null>(null);
-  const [creationError, setCreationError] = createSignal("");
   const [inviteInfo, setInviteInfo] = createSignal<{
     createdBy?: string;
     usedBy?: string;
@@ -54,7 +47,6 @@ export function Index() {
 
   const handleCreateInvite = async () => {
     try {
-      setCreationError("");
       await createInvite(targetNickname());
       setTargetNickname("");
       refetchInvites();

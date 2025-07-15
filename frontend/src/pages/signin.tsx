@@ -1,4 +1,4 @@
-import { createSignal, createResource, JSX } from "solid-js";
+import { createSignal, JSX } from "solid-js";
 import { Button } from "@components/uikit/Button";
 import { Input } from "@components/uikit/Input";
 import { VStack } from "@components/uikit/Stack";
