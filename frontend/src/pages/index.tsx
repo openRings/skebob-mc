@@ -4,7 +4,13 @@ import { HStack, VStack } from "@components/uikit/Stack";
 import { useNavigate, useSearchParams } from "@solidjs/router";
 import { Input } from "@components/uikit/Input";
 import { error, success, warn } from "@components/NotificationContainer";
-import { createResource, createSignal, Show } from "solid-js";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  onMount,
+  Show,
+} from "solid-js";
 import { Modal } from "@components/Modal";
 import {
   acceptInvite,
@@ -28,6 +34,11 @@ export function Index() {
   const [targetNickname, setTargetNickname] = createSignal("");
   const [copied, setCopied] = createSignal<string | null>(null);
   const [creationError, setCreationError] = createSignal("");
+  const [inviteInfo, setInviteInfo] = createSignal<{
+    createdBy?: string;
+    usedBy?: string;
+    canAccept?: boolean;
+  } | null>(null);
 
   const [profile, { refetch: refetchProfile }] = createResource(fetchProfile);
   const [invites, { refetch: refetchInvites }] = createResource(fetchInvites);
@@ -54,9 +65,8 @@ export function Index() {
 
   const handleAcceptInvite = async () => {
     try {
-      const response = await getInviteCodeInfo(inviteCode);
-      if (response.used_by) {
-        throw Error("Это приглашение уже использовано");
+      if (!inviteInfo()?.canAccept) {
+        throw new Error("Это приглашение нельзя принять");
       }
       await acceptInvite(inviteCode);
       success("Приглашение принято");
@@ -81,6 +91,31 @@ export function Index() {
     setCopied(code);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  createEffect(async () => {
+    if (profile.loading || !inviteCode) return;
+
+    if (!profile() || profile.error) {
+      error("Ошибка загрузки профиля, невозможно проверить приглашение");
+      return;
+    }
+
+    try {
+      const response = await getInviteCodeInfo(inviteCode);
+      setInviteInfo({
+        createdBy: response.created_by,
+        usedBy: response.used_by,
+        canAccept: !response.used_by && !profile()?.invited,
+      });
+    } catch (err) {
+      error(
+        err instanceof Error
+          ? err.message
+          : "Ошибка загрузки данных приглашения",
+      );
+      setIsModalOpen(false);
+    }
+  });
 
   return (
     <VStack class="items-center gap-12">
@@ -229,13 +264,26 @@ export function Index() {
         title="Принять приглашение?"
         onConfirm={handleAcceptInvite}
         confirmText="Принять"
+        confirmDisabled={!inviteInfo()?.canAccept}
       >
-        <p class="text-dark/80">
-          Вы хотите использовать код приглашения <b>{inviteCode}</b>?
-        </p>
-        <Show when={creationError()}>
-          <p class="text-red-500">{creationError()}</p>
-        </Show>
+        <VStack class="text-dark/80 gap-2">
+          <p>
+            Код приглашения: <b>{inviteCode}</b>
+          </p>
+          <Show when={inviteInfo()?.createdBy}>
+            <p>
+              Создано: <b>{inviteInfo()?.createdBy}</b>
+            </p>
+          </Show>
+          <Show when={inviteInfo()?.usedBy}>
+            <p>
+              Использовано: <b>{inviteInfo()?.usedBy}</b>
+            </p>
+          </Show>
+          <Show when={!inviteInfo()?.canAccept && inviteInfo()}>
+            <p class="text-error">Вы не можете принять это приглашение</p>
+          </Show>
+        </VStack>
       </Modal>
     </VStack>
   );
