@@ -58,12 +58,11 @@ export function Index() {
         throw Error("Это приглашение уже использовано");
       }
       await acceptInvite(inviteCode);
-      setIsModalOpen(false);
       refetchProfile();
-      navigate("/");
     } catch (err) {
-      setIsModalOpen(false);
       error(err instanceof Error ? err.message : "Ошибка принятия приглашения");
+    } finally {
+      setIsModalOpen(false);
       navigate("/");
     }
   };
@@ -200,7 +199,7 @@ export function Index() {
                         </p>
                       </VStack>
                       <VStack class="w-max gap-1">
-                        <p class="text-dark/50 w-full text-right text-nowrap">
+                        <p class="text-dark/50 w-full text-nowrap text-right">
                           Код: <span class="text-dark">{invite.code}</span>
                         </p>
                         <Button

@@ -1,4 +1,4 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, JSX } from "solid-js";
 import { Notification } from "./Notification";
 
 interface NotificationData {
@@ -33,9 +33,12 @@ export function warn(message: string) {
   addNotification(message, "warn");
 }
 
-export const NotificationContainer = () => {
+type Props = JSX.IntrinsicElements["div"];
+
+export function NotificationContainer(props: Props): JSX.Element {
+  const { ...attrs } = props;
   return (
-    <div class="fixed top-4 right-4 z-50 flex flex-col gap-2">
+    <div {...attrs} class="fixed top-4 right-4 z-50 flex flex-col gap-2">
       <For each={notifications()}>
         {(notification) => (
           <Notification
@@ -51,4 +54,4 @@ export const NotificationContainer = () => {
       </For>
     </div>
   );
-};
+}

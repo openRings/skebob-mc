@@ -1,21 +1,27 @@
-import { Component } from "solid-js";
+import { Component, JSX } from "solid-js";
 
-interface NotificationProps {
+type Props = JSX.IntrinsicElements["div"] & {
   message: string;
   type?: "error" | "success" | "warn";
   onClose: () => void;
-}
+};
 
-export const Notification: Component<NotificationProps> = (props) => {
+export function Notification(props: Props): JSX.Element {
+  const { ...attrs } = props;
   return (
     <div
-      class={`rounded-md p-4 text-white shadow-md ${
+      {...attrs}
+      class={[
+        "rounded-md p-4 text-white shadow-md",
+
         props.type === "error"
           ? "bg-error"
           : props.type === "success"
             ? "bg-success"
-            : "bg-warn"
-      }`}
+            : "bg-warn",
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div class="flex items-center justify-between">
         <p class="select-none">{props.message}</p>
@@ -28,4 +34,4 @@ export const Notification: Component<NotificationProps> = (props) => {
       </div>
     </div>
   );
-};
+}
