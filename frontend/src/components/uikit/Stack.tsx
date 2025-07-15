@@ -14,7 +14,10 @@ export function HStack(props: Props) {
 export function VStack(props: Props) {
   const { ...attrs } = props;
   return (
-    <div {...attrs} class={["flex flex-col", props.class].join(" ")}>
+    <div
+      {...attrs}
+      class={["flex flex-col", props.class].filter(Boolean).join(" ")}
+    >
       {props.children}
     </div>
   );

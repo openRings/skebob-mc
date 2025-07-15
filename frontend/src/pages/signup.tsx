@@ -170,8 +170,8 @@ export function Signup(): JSX.Element {
             disabled={
               loading() ||
               !password() ||
-              !passwordInputError ||
-              !repeatPasswordInputError ||
+              !passwordInputError() ||
+              !repeatPasswordInputError() ||
               !nickname()
             }
           >

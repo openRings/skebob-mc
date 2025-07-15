@@ -17,5 +17,5 @@ interface ProfileResponse {
   nickname: string;
   maxInvites: number;
   createdAt: Date;
-  invited: string;
+  invited: Date | null;
 }
