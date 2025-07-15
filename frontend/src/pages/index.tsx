@@ -19,7 +19,7 @@ import {
   fetchProfile,
   getInviteCodeInfo,
 } from "src/helpers/profile";
-import { copyToClipboard } from "src/utlis/clipboard";
+import { copyToClipboard } from "src/utils/clipboard";
 
 const formatter = new Intl.DateTimeFormat("ru-RU", {
   day: "numeric",
