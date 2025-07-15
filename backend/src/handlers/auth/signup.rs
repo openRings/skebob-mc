@@ -30,6 +30,10 @@ pub async fn signup(
         password_repeat,
     } = body;
 
+    if let Err(message) = validate_nickname(&nickname) {
+        return Err(EndpointError::BadRequest(message.to_string()));
+    }
+
     if let Err(message) = validate_passwords(&password, &password_repeat) {
         return Err(EndpointError::BadRequest(message.to_string()));
     }
@@ -72,6 +76,25 @@ pub async fn signup(
     tracing::info!("created user: {}", nickname);
 
     Ok(StatusCode::CREATED)
+}
+
+fn validate_nickname(nickname: &str) -> Result<(), &'static str> {
+    if nickname.len() < 3 || nickname.len() > 16 {
+        return Err("Длина ника должна быть от 3 до 16 символов");
+    }
+
+    if !nickname
+        .chars()
+        .all(|c| c.is_ascii_alphanumeric() || c == '_')
+    {
+        return Err("Ник может содержать только латинские буквы, цифры и подчёркивание");
+    }
+
+    if nickname.chars().all(|c| c.is_ascii_digit()) {
+        return Err("Ник не может состоять только из цифр");
+    }
+
+    Ok(())
 }
 
 fn validate_passwords(password: &str, password_repeat: &str) -> Result<(), &'static str> {
