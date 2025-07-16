@@ -7,12 +7,15 @@ services:
     restart: unless-stopped
     networks:
       - proxy_network
+      - shared
 
   backend:
     image: ghcr.io/openrings/skebob-backend:latest
     build:
       dockerfile: ./docker/Dockerfile.prod.backend
     restart: unless-stopped
+    networks:
+      - shared
 
   prometheus:
     image: ghcr.io/openrings/skebob-prometheus:latest
@@ -21,6 +24,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/prometheus:/prometheus
+    networks:
+      - shared
 
   minecraft:
     image: ghcr.io/openrings/skebob-minecraft:latest
@@ -53,6 +58,8 @@ services:
       SIMULATION_DISTANCE: 12
     volumes:
       - ./data/minecraft:/data
+    networks:
+      - shared
 
   database:
     image: mariadb:11.8
@@ -62,8 +69,11 @@ services:
       MARIADB_DATABASE: minecraft
     volumes:
       - ./data/database:/var/lib/mysql
+    networks:
+      - shared
 
 
 networks:
+  shared:
   proxy_network:
     external: true

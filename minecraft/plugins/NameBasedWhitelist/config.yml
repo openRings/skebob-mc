@@ -11,7 +11,7 @@ database: # If storage type is mysql
   password: "root"
 
 messages:
-  kick-message: "&cПохоже вас еще не пригласили, посетите сайт play.magwoo.ru."
+  kick-message: "&cПохоже вас еще не пригласили, посетите сайт skebobmc.ru."
   no-permissions: "&2NBWL &7> &cYou don't have permission."
   player-add: "&2NBWL &7> &aPlayer added to the whitelist."
   player-remove: "&2NBWL &7> &cPlayer removed from the whitelist."
