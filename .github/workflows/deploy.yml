@@ -67,3 +67,25 @@ jobs:
             --tag ghcr.io/openrings/skebob-minecraft:${GITHUB_SHA} \
             --push \
             .
+
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.HOST_KEY }}
+
+      - name: Copy compose file to server
+        run: |
+          scp -o StrictHostKeyChecking=no compose.prod.yml ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDR }}:skebobmc
+
+      - name: Pull and Start Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDR }} 'cd skebobmc && docker compose -f compose.prod.yml pull && docker compose -f compose.prod.yml up -d'
