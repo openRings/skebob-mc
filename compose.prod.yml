@@ -27,11 +27,11 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - target: 7777
-        published: 7777
+      - target: 25565
+        published: 25565
         protocol: tcp
-      - target: 7777
-        published: 7777
+      - target: 25565
+        published: 25565
         protocol: udp
     environment:
       EULA: TRUE
@@ -46,7 +46,7 @@ services:
       VIEW_DISTANCE: 24
       MODE: survival
       ONLINE_MODE: false
-      SERVER_PORT: 7777
+      SERVER_PORT: 25565
       SIMULATION_DISTANCE: 12
     volumes:
       - ./data/minecraft:/data
