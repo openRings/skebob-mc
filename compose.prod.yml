@@ -1,9 +1,12 @@
 services:
   proxy:
+    container_name: skebob-proxy
     image: ghcr.io/openrings/skebob-proxy:latest
     build:
       dockerfile: ./docker/Dockerfile.prod.proxy
     restart: unless-stopped
+    networks:
+      - proxy_network
 
   backend:
     image: ghcr.io/openrings/skebob-backend:latest
@@ -59,3 +62,8 @@ services:
       MARIADB_DATABASE: minecraft
     volumes:
       - ./data/database:/var/lib/mysql
+
+
+networks:
+  proxy_network:
+    external: true
