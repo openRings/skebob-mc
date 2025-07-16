@@ -1,47 +1,28 @@
 services:
   proxy:
-    image: caddy:2.10-alpine
+    image: ghcr.io/openrings/skebob-proxy:latest
+    build:
+      dockerfile: ./docker/Dockerfile.prod.proxy
     restart: unless-stopped
-    ports:
-      - 80:80
-      - 8080:8080
-    volumes:
-      - ./docker/Caddyfile.dev:/etc/caddy/Caddyfile
 
   backend:
+    image: ghcr.io/openrings/skebob-backend:latest
     build:
-      dockerfile: ./docker/Dockerfile.dev.backend
+      dockerfile: ./docker/Dockerfile.prod.backend
     restart: unless-stopped
-    volumes:
-      - ./backend:/app
-      - cargo-cache:/usr/local/cargo
-
-  frontend:
-    build:
-      dockerfile: ./docker/Dockerfile.dev.frontend
-      context: .
-    restart: always
-    volumes:
-      - ./frontend:/app
-
-  grafana:
-    image: grafana/grafana:12.0.2
-    restart: unless-stopped
-    volumes:
-      - ./data/grafana:/var/lib/grafana
-      - ./docker/grafana:/etc/grafana/provisioning
 
   prometheus:
-    image: prom/prometheus:v3.4.2
-    restart: always
+    image: ghcr.io/openrings/skebob-prometheus:latest
+    build:
+      dockerfile: ./docker/Dockerfile.prod.prometheus
+    restart: unless-stopped
     volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./data/prometheus:/prometheus
 
   minecraft:
+    image: ghcr.io/openrings/skebob-minecraft:latest
     build:
-      dockerfile: ./docker/Dockerfile.minecraft
-      context: .
+      dockerfile: ./docker/Dockerfile.prod.minecraft
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -56,13 +37,13 @@ services:
       EULA: TRUE
       TYPE: PAPER
       VERSION: 1.21.1
-      MEMORY: 4G
+      MEMORY: 6G
       MOTD: Памидоры памидоры помидоры
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
       SNOOPER_ENABLED: false
       SPAWN_PROTECTION: 0
-      VIEW_DISTANCE: 32
+      VIEW_DISTANCE: 24
       MODE: survival
       ONLINE_MODE: false
       SERVER_PORT: 7777
@@ -71,15 +52,10 @@ services:
       - ./data/minecraft:/data
 
   database:
-    image: mariadb
+    image: mariadb:11.8
     restart: unless-stopped
-    ports:
-      - 3306:3306
     environment:
       MARIADB_ROOT_PASSWORD: root
       MARIADB_DATABASE: minecraft
     volumes:
       - ./data/database:/var/lib/mysql
-
-volumes:
-  cargo-cache:
