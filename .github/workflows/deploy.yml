@@ -1,0 +1,69 @@
+name: Build and Deploy Docker Containers
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        run: |
+          docker buildx create --use
+
+      - name: Build and push `proxy` Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --file ./docker/Dockerfile.prod.proxy \
+            --tag ghcr.io/openrings/skebob-proxy:latest \
+            --tag ghcr.io/openrings/skebob-proxy:${GITHUB_SHA} \
+            --push \
+            .
+
+      - name: Build and push `backend` Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --file ./docker/Dockerfile.prod.backend \
+            --tag ghcr.io/openrings/skebob-backend:latest \
+            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
+            --push \
+            .
+
+      - name: Build and push `prometheus` Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --file ./docker/Dockerfile.prod.prometheus \
+            --tag ghcr.io/openrings/skebob-prometheus:latest \
+            --tag ghcr.io/openrings/skebob-prometheus:${GITHUB_SHA} \
+            --push \
+            .
+
+      - name: Build and push `minecraft` Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --file ./docker/Dockerfile.minecraft \
+            --tag ghcr.io/openrings/skebob-minecraft:latest \
+            --tag ghcr.io/openrings/skebob-minecraft:${GITHUB_SHA} \
+            --push \
+            .
