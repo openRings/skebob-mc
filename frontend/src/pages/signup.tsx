@@ -119,6 +119,7 @@ export function Signup(): JSX.Element {
 
   return (
     <div class="flex h-screen w-full items-center justify-center">
+      <img src="/logo.png" class="absolute top-12 mt-10 h-24" />
       <VStack class="w-xs items-center gap-12">
         <h1 class="text-dark/50 w-full text-center text-4xl">Регистрация</h1>
         <VStack class="w-full gap-6">

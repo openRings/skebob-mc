@@ -111,7 +111,7 @@ export function Index() {
 
   return (
     <VStack class="items-center gap-12">
-      <h1 class="text-dark/50 mt-16 w-full text-center text-4xl">SkebobMC</h1>
+      <img src="/logo.png" class="mt-12 h-24" />
       <Block title="Профиль">
         <Show
           when={!profile.loading && !profile.error}
