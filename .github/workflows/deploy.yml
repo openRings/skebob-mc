@@ -31,7 +31,7 @@ jobs:
       - name: Build and push `proxy` Docker image
         run: |
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             --file ./docker/Dockerfile.prod.proxy \
             --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:proxy \
             --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:proxy,mode=max \
@@ -43,7 +43,7 @@ jobs:
       - name: Build and push `backend` Docker image
         run: |
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             --file ./docker/Dockerfile.prod.backend \
             --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend \
             --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend,mode=max \
@@ -55,7 +55,7 @@ jobs:
       - name: Build and push `prometheus` Docker image
         run: |
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             --file ./docker/Dockerfile.prod.prometheus \
             --tag ghcr.io/openrings/skebob-prometheus:latest \
             --tag ghcr.io/openrings/skebob-prometheus:${GITHUB_SHA} \
@@ -65,7 +65,7 @@ jobs:
       - name: Build and push `minecraft` Docker image
         run: |
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             --file ./docker/Dockerfile.minecraft \
             --tag ghcr.io/openrings/skebob-minecraft:latest \
             --tag ghcr.io/openrings/skebob-minecraft:${GITHUB_SHA} \
