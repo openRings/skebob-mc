@@ -48,7 +48,6 @@ jobs:
             --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend-amd64 \
             --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend-amd64,mode=max \
             --tag ghcr.io/openrings/skebob-backend:amd64 \
-            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-amd64 \
             --push \
             .
 
@@ -101,7 +100,6 @@ jobs:
             --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend-arm \
             --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend-arm,mode=max \
             --tag ghcr.io/openrings/skebob-backend:arm64 \
-            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-arm64 \
             --push \
             .
 
@@ -130,12 +128,9 @@ jobs:
         run: |
           docker buildx imagetools create \
             -t ghcr.io/openrings/skebob-backend:latest \
+            -t ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
             ghcr.io/openrings/skebob-backend:amd64 \
             ghcr.io/openrings/skebob-backend:arm64
-          docker buildx imagetools create \
-            -t ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
-            ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-amd64 \
-            ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-arm64
 
 
   deploy:
