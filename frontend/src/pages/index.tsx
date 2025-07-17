@@ -127,7 +127,7 @@ export function Index() {
         >
           <HStack class="justify-between py-4">
             <HStack class="w-full items-center gap-4">
-              <img src="steve-head.png" alt="skin" class="size-24" />
+              <img src="head.jpg" alt="skin" class="size-24" />
               <VStack class="gap-3">
                 <p class="max-w-[200px] truncate text-2xl">
                   {profile()?.nickname}
