@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  build-x86:
+  build-amd64:
     runs-on: ubuntu-22.04
     permissions:
         contents: read
@@ -45,10 +45,10 @@ jobs:
           docker buildx build \
             --platform linux/amd64 \
             --file ./docker/Dockerfile.prod.backend \
-            --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend \
-            --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend,mode=max \
-            --tag ghcr.io/openrings/skebob-backend:latest \
-            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
+            --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend-amd64 \
+            --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend-amd64,mode=max \
+            --tag ghcr.io/openrings/skebob-backend:amd64 \
+            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-amd64 \
             --push \
             .
 
@@ -98,23 +98,34 @@ jobs:
           docker buildx build \
             --platform linux/arm64 \
             --file ./docker/Dockerfile.prod.backend \
-            --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend \
-            --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend,mode=max \
-            --tag ghcr.io/openrings/skebob-backend:latest \
-            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
+            --cache-from type=registry,ref=ghcr.io/openrings/skebob-cache:backend-arm \
+            --cache-to type=registry,ref=ghcr.io/openrings/skebob-cache:backend-arm,mode=max \
+            --tag ghcr.io/openrings/skebob-backend:arm64 \
+            --tag ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-arm64 \
             --push \
             .
 
 
   deploy:
     needs:
-      - build-x86
+      - build-amd64
       - build-arm
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Create and push multi-arch manifest for `backend`
+        run: |
+          docker manifest create \
+            ghcr.io/openrings/skebob-backend:amd64 \
+            ghcr.io/openrings/skebob-backend:arm64
+          docker manifest push ghcr.io/openrings/skebob-backend:latest
+          docker manifest create \
+            ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-amd64 \
+            ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-arm64
+          docker manifest push ghcr.io/openrings/skebob-backend:${GITHUB_SHA}
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
