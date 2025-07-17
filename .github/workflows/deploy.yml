@@ -106,11 +106,14 @@ jobs:
             .
 
 
-  deploy:
+  manifest-prepare:
     needs:
       - build-amd64
       - build-arm
     runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
 
     steps:
       - name: Checkout code
@@ -133,6 +136,15 @@ jobs:
             -t ghcr.io/openrings/skebob-backend:${GITHUB_SHA} \
             ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-amd64 \
             ghcr.io/openrings/skebob-backend:${GITHUB_SHA}-arm64
+
+
+  deploy:
+    needs: manifest-prepare
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
