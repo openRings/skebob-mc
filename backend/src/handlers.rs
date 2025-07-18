@@ -1,4 +1,5 @@
 use axum::Router;
+use axum::http::{HeaderMap, StatusCode};
 use axum::middleware::from_fn;
 use axum::routing::get;
 use axum_cookie::CookieLayer;
@@ -19,11 +20,19 @@ pub fn create_router(state: Database) -> Router {
         .with_default_metrics()
         .build_pair();
 
+    let metrics_handle = |headers: HeaderMap| async move {
+        if headers.get("X-IP").is_some() {
+            return Err(StatusCode::FORBIDDEN);
+        }
+
+        Ok(metric_handle.render())
+    };
+
     Router::new()
         .nest("/invites", invites::get_nest())
         .nest("/profile", profile::get_nest())
         .merge(auth::get_nest())
-        .route("/metrics", get(|| async move { metric_handle.render() }))
+        .route("/metrics", get(metrics_handle))
         .layer(from_fn(error::error_logging_middleware))
         .layer(CookieLayer::strict())
         .layer(metric_layer)

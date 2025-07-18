@@ -3,7 +3,9 @@
 
 	handle_path /api/* {
 	    uri strip_prefix /api
-		reverse_proxy backend
+		reverse_proxy backend {
+			header_up X-IP {remote_host}
+		}
 	}
 
 	handle {
