@@ -1,0 +1,34 @@
+# The hour and minute when the server should restart (24 hour format)
+restartTime:
+  - "15:00"
+  - "3:00"
+# Add multiple times by adding a new line like: - '12:00'
+
+# Configure message and the corresponding pre-warning time in seconds
+messages:
+  "0": "Рестарт сейчас.."
+  "1": "Рестарт через 1 секунду"
+  "2": "Рестарт через 2 секунды"
+  "3": "Рестарт через 3 секунды"
+  "4": "Рестарт через 4 секунды"
+  "5": "Рестарт через 5 секунд"
+  "10": "Рестарт через 10 секунд"
+  "30": "Рестарт через 30 секунд"
+  "60": "Рестарт через 1 минуту"
+  "120": "Рестарт через 2 минуты"
+  "180": "Рестарт через 3 минуты"
+  "300": "Рестарт через 5 минут"
+
+titles:
+  "300": "§l§4Внимание"
+  "10": "§l§4Внимание"
+  "3": "§l§4Внимание"
+
+subtitles:
+  "300": "§6Рестарт через 5 минут"
+  "10": "§6Рестарт через 10 секунд"
+  "3": "§6Рестарт сейчас.."
+
+# The commands that will be executed at restart time
+commands:
+  - "restart"
