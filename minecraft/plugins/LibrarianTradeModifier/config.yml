@@ -1,0 +1,5 @@
+# Max enchantment level allowed on traded books (default 1)
+max-level: 2
+
+# The item that will be used instead of emeralds, with a random amount (1-40)
+currency-item: DEEPSLATE_DIAMOND_ORE
