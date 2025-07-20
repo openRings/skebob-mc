@@ -1,0 +1,23 @@
+# Ultimate Message config.yml
+# Tab for configuring local and global chat
+LGChat:
+  # Radius of sending messages to the locale
+  local-chat-radius: 64
+
+  # Message format in local or global chats
+  local-chat-format: "&e⏵ %player%&7: &f%message%"
+  global-chat-format: "&a🌎 %player%&7: &f%message%"
+
+# System message related to players
+JLMsg:
+  # First join message
+  firstEnable: true
+  firstMessage: "&6⏵ %player% впервые на сервере!"
+
+  # Join message
+  joinEnable: true
+  joinMessage: "&a⏵ %player% присоединился к игре!"
+
+  # Quit message
+  quitEnable: true
+  quitMessage: "&c⏵ %player% вышел из игры!"
