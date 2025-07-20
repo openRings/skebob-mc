@@ -46,7 +46,10 @@ services:
       TYPE: LEAF
       VERSION: 1.21.4
       MEMORY: 6G
-      MOTD: Памидоры памидоры помидоры
+      MOTD: "Наш сайт: skebobmc.ru"
+      ICON: /icon.png
+      RESOURCE_PACK: https://skebobmc.ru/resourcepack.zip
+      RESOURCE_PACK_ENFORCE: true
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
       SNOOPER_ENABLED: false

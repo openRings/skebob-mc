@@ -2,4 +2,5 @@ FROM itzg/minecraft-server:java21 AS runner
 WORKDIR /app
 
 COPY ./minecraft/plugins ./plugins
+COPY ./minecraft/icon.png /icon.png
 ENV COPY_PLUGINS_SRC=/app/plugins

@@ -58,6 +58,9 @@ services:
       VERSION: 1.21.4
       MEMORY: 4G
       MOTD: Памидоры памидоры помидоры
+      ICON: /icon.png
+      RESOURCE_PACK: http://localhost/resourcepack.zip
+      RESOURCE_PACK_ENFORCE: true
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
       SNOOPER_ENABLED: false
