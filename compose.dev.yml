@@ -54,7 +54,7 @@ services:
         protocol: udp
     environment:
       EULA: TRUE
-      TYPE: PAPER
+      TYPE: LEAF
       VERSION: 1.21.4
       MEMORY: 4G
       MOTD: Памидоры памидоры помидоры
