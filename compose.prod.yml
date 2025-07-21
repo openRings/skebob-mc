@@ -1,12 +1,13 @@
 services:
   proxy:
-    container_name: skebob-proxy
     image: ghcr.io/openrings/skebob-proxy:latest
     build:
       dockerfile: ./docker/Dockerfile.prod.proxy
     restart: unless-stopped
+    labels:
+      - proxy.domain=skebobmc.ru
     networks:
-      - proxy_network
+      - proxy-network
       - shared
 
   backend:
@@ -78,5 +79,5 @@ services:
 
 networks:
   shared:
-  proxy_network:
+  proxy-network:
     external: true
