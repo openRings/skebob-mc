@@ -1,0 +1,4 @@
+name: villager-nerf
+version: "1.0"
+main: VillagerNerf
+api-version: "1.21"

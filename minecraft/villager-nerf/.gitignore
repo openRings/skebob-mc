@@ -1,0 +1,15 @@
+### IntelliJ IDEA ###
+.idea/
+
+### Gradle ###
+.gradle/
+gradle/
+build/
+
+### PaperMC ###
+# Локальные серверы для тестирования
+run/
+
+### Пользовательские файлы ###
+*.properties
+*.keystore
