@@ -11,7 +11,7 @@ LGChat:
 # System message related to players
 JLMsg:
   # First join message
-  firstEnable: true
+  firstEnable: false
   firstMessage: "&6⏵ %player% впервые на сервере!"
 
   # Join message
@@ -19,5 +19,5 @@ JLMsg:
   joinMessage: "&a⏵ %player% присоединился к игре!"
 
   # Quit message
-  quitEnable: true
+  quitEnable: false
   quitMessage: "&c⏵ %player% вышел из игры!"

@@ -152,4 +152,4 @@ jobs:
 
       - name: Pull and Start Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDR }} 'cd skebobmc && docker compose pull && docker compose up -d'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDR }} 'cd skebobmc && docker compose pull && docker compose up -d backend database prometheus proxy'
