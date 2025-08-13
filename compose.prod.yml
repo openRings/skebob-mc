@@ -50,7 +50,7 @@ services:
       MOTD: "Наш сайт: skebobmc.ru"
       ICON: /icon.png
       RESOURCE_PACK: https://skebobmc.ru/resourcepack.zip
-      RESOURCE_PACK_SHA1: f39928f4cbec95b85e6448c344dbeb3cd1ffc932
+      RESOURCE_PACK_SHA1: 119a571ccfc8762926b26f391b852d74a0e06f44
       RESOURCE_PACK_ENFORCE: true
       DIFFICULTY: hard
       MAX_PLAYERS: 10000
