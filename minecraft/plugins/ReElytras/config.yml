@@ -22,7 +22,7 @@ allowRepairWithPhantomMembrane: true
 
 # How many percent of the maximum durability will be repaired with a single phantom membrane
 # Default: 25
-repairWithPhantomMembranePercent: 5
+repairWithPhantomMembranePercent: 10
 
 # Will the sound of an item breaking be played when the elitres breaks
 # Default: false
@@ -30,7 +30,7 @@ playDestroySound: true
 
 # How much durability will be removed from the elitres per second
 # Default: 1
-damagePerSecond: 7
+damagePerSecond: 5
 
 # The elitres will disappear from the player's inventory if they break down
 # Default: false

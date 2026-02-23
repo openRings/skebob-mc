@@ -1,0 +1,10 @@
+
+language: ru #only en, ru
+
+ItemCanBeLock:
+  - FILLED_MAP
+  - WRITTEN_BOOK
+  - NETHERITE_UPGRADE_SMITHING_TEMPLATE
+
+ItemTagCanBeLock:
+  - trim_templates

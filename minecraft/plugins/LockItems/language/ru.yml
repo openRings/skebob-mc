@@ -1,0 +1,20 @@
+
+
+item_successfully_locked: "&aПредмет в руке был заблокирован"
+item_already_locked: "&cПредмет уже заблокирован!"
+attempt_lock_empty_hand: "&cВы должны держать предмет в руке!"
+attempt_lock_item_not_in_list: "&cВы не можете заблокировать этот предмет!"
+
+item_successfully_unlocked: "&aПредмет в руке был разблокирован"
+item_not_locked: "&cПредмет не заблокирован!"
+attempt_unlock_empty_hand: "&cВы должны держать предмет в руке!"
+attempt_unlock_item_not_in_list: "&cПредмет не заблокирован!"
+
+attempt_unlock_item_not_owner: "&cПредмет заблокирован не вами!"
+
+attempt_craft_locked_item: "&cЭтот предмет заблокирован игроком {Player}!"
+
+item_lore: "&7Заблокировано игроком {Player}"
+
+reload_config: "&aКонфиг перезгружен!"
+command_sender_not_player: "Эта команда для игроков!"
