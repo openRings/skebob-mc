@@ -1,4 +1,4 @@
-:80 {
+skebobmc.ru {
 	encode gzip zstd
 
 	handle_path /api/* {
